@@ -1,0 +1,43 @@
+# dependências
+node_modules/
+.pnp
+.pnp.*
+.yarn/install-state.gz
+
+# build
+.next/
+out/
+build/
+dist/
+
+# arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env (nunca commitar segredos!)
+.env
+.env*.local
+.env.production
+.env.development
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Prisma local
+prisma/dev.db
+prisma/dev.db-journal
+# NOTA: prisma/schema.production.prisma é GERADO mas COMITADO (Railway precisa dele).
+
+# Outros
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.turbo

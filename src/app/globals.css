@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fonte-base: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-fundo-claro text-oceano-800 antialiased;
+  font-family: var(--fonte-base);
+  text-rendering: optimizeLegibility;
+}
+
+/* Foco visível e respeitoso pra acessibilidade */
+:focus-visible {
+  outline: 2px solid theme("colors.brisa.400");
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Ondas ambiente na landing — movimento horizontal lento, infinito */
+@keyframes ondular-horizontal {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ondular-horizontal-lento {
+  animation: ondular-horizontal 28s linear infinite;
+}
+.animate-ondular-horizontal-medio {
+  animation: ondular-horizontal 20s linear infinite;
+}
+.animate-ondular-horizontal-rapido {
+  animation: ondular-horizontal 14s linear infinite;
+}
+
+/* Partículas flutuando pra cima na landing */
+@keyframes flutuar-cima {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.6;
+  }
+  85% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(-110vh);
+    opacity: 0;
+  }
+}
+
+.animate-flutuar-cima {
+  animation-name: flutuar-cima;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Animação suave entre passos do acolhimento */
+@keyframes em-aparicao {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-em-aparicao {
+  animation: em-aparicao 320ms ease-out both;
+}
+
+/* Reduz animações pra usuários com sensibilidade vestibular */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

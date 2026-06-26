@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(pnpm typecheck *)",
+      "PowerShell(pnpm dev *)",
+      "PowerShell($bytes = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create\\(\\).GetBytes\\($bytes\\); [Convert]::ToBase64String\\($bytes\\))",
+      "PowerShell(pnpm add *)",
+      "PowerShell(pnpm db:gerar *)",
+      "PowerShell(pnpm prisma *)",
+      "PowerShell(pnpm db:popular *)",
+      "PowerShell(pnpm build *)",
+      "PowerShell(node scripts/gerar-schema-producao.mjs 2>&1 | Out-String)"
+    ]
+  }
+}

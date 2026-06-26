@@ -1,0 +1,546 @@
+// =============================================================================
+// GPS Emocional — schema portável SQLite (dev) → Postgres (prod)
+//
+// Convenções:
+//   - Modelos em PascalCase PT-BR (Usuario, CheckIn, EventoSeguranca)
+//   - Tabelas em snake_case PT-BR (via @@map)
+//   - Campos cifrados marcados com sufixo Cifrado / Cifrada
+//   - IDs em cuid() (compactos, ordenáveis, portáveis)
+//   - Sem String[] (não suportado em SQLite). Use Json ou tabelas intermediárias.
+//   - Sem operadores JSON no banco. JSON é processado na aplicação.
+// =============================================================================
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+enum TipoCheckIn {
+  MATINAL
+  NOTURNO
+  EMERGENCIA
+}
+
+enum TipoExercicio {
+  TCC
+  ACT
+  SOMATICO
+  PSICOEDUCACAO
+  EXPRESSIVO
+  RESPIRACAO
+}
+
+enum EscalaTipo {
+  GAD7
+  PHQ9
+  ROSENBERG
+  ECR_R
+}
+
+enum FaixaInterpretacao {
+  MINIMA
+  LEVE
+  MODERADA
+  GRAVE
+}
+
+enum OrigemEventoSeguranca {
+  CHECKIN
+  DIARIO
+  IA_RESPOSTA
+  EMERGENCIA
+  MANUAL
+}
+
+enum NivelRisco {
+  BAIXO
+  MEDIO
+  ALTO
+  CRITICO
+}
+
+enum EncaminhamentoTipo {
+  CVV_188
+  PLANO_SEGURANCA
+  CONTATO_EMERGENCIA
+  NENHUM
+}
+
+enum TipoOperacaoIA {
+  ESPELHO_COGNITIVO
+  RESUMO_SEMANAL
+  PADRAO_DETECTADO
+  SUGESTAO_EXERCICIO
+}
+
+enum PlanoAssinatura {
+  MENSAL
+  ANUAL
+  VITALICIO
+}
+
+enum StatusAssinatura {
+  TRIALING
+  ATIVA
+  VITALICIA
+  CANCELADA
+  SUSPENSA
+  EXPIRADA
+}
+
+enum TipoMecanicaInterativa {
+  BALAO_DA_CALMA
+  ESPELHO_DA_VERDADE
+  CORTAR_FIOS
+  RESGATE_MEMORIAS
+  ACENDER_LUZ_INTERNA
+  CONECTAR_ESTRELAS
+}
+
+enum StatusTema {
+  DISPONIVEL
+  EM_BREVE
+}
+
+// =============================================================================
+// IDENTIDADE & CONTA
+// =============================================================================
+
+model Usuario {
+  id                            String    @id @default(cuid())
+  // Auth.js Prisma Adapter exige estes 3 campos com esses nomes exatos:
+  // `name`, `email`, `emailVerified` (não usamos `image` porque temos `imagemUrl`)
+  name                          String?
+  email                         String    @unique
+  emailVerified                 DateTime?
+  image                         String?
+  // Campos próprios do GPS Emocional
+  nomeExibicao                  String?
+  imagemUrl                     String?
+  termosAceitos                 Boolean   @default(false)
+  termosAceitosEm               DateTime?
+  consentimentoDadosSensiveis   Boolean   @default(false)
+  consentimentoDadosSensiveisEm DateTime?
+  dataExclusaoSolicitada        DateTime?
+  criadoEm                      DateTime  @default(now())
+  atualizadoEm                  DateTime  @updatedAt
+
+  // Tabelas do Auth.js (relações com nome em PT-BR)
+  contas  Account[]
+  sessoes Session[]
+
+  perfil            Perfil?
+  assinatura        Assinatura?
+  checkIns          CheckIn[]
+  entradasDiario    EntradaDiario[]
+  trilhas           TrilhaUsuario[]
+  pontuacoesEscalas PontuacaoEscala[]
+  eventosSeguranca  EventoSeguranca[]
+  planosSeguranca   PlanoSeguranca[]
+  interacoesIa      InteracaoIA[]
+  sintesesSemanais  SinteseSemanal[]
+  sessoesConcluidas SessaoConcluida[]
+
+  @@map("usuarios")
+}
+
+// =============================================================================
+// AUTH.JS V5 — tabelas exigidas pelo Prisma Adapter
+// Nomes de campos em inglês são impostos pelo adapter; relações com nomes PT-BR.
+// =============================================================================
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  usuario Usuario @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  usuario Usuario @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Perfil {
+  id                   String    @id @default(cuid())
+  usuarioId            String    @unique
+  dataNascimento       DateTime?
+  generoIdentificado   String?
+  emTerapiaAtual       Boolean   @default(false)
+  nomePsicologoCifrado String?
+  // JSON com regiões marcadas no boneco corporal. Cifrado pela camada de aplicação.
+  mapaCorporalCifrado  String?
+  criadoEm             DateTime  @default(now())
+  atualizadoEm         DateTime  @updatedAt
+
+  usuario        Usuario      @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  temasInteresse PerfilTema[]
+
+  @@map("perfis")
+}
+
+model PerfilTema {
+  perfilId String
+  temaId   String
+
+  perfil Perfil @relation(fields: [perfilId], references: [id], onDelete: Cascade)
+  tema   Tema   @relation(fields: [temaId], references: [id], onDelete: Cascade)
+
+  @@id([perfilId, temaId])
+  @@map("perfis_temas")
+}
+
+model Assinatura {
+  id                    String           @id @default(cuid())
+  usuarioId             String           @unique
+  stripeCustomerId      String?
+  stripeSubscriptionId  String?
+  stripePaymentIntentId String?
+  plano                 PlanoAssinatura
+  status                StatusAssinatura
+  iniciouEm             DateTime
+  periodoAtualFim       DateTime?
+  pagoEm                DateTime?
+  canceladaEm           DateTime?
+  criadoEm              DateTime         @default(now())
+  atualizadoEm          DateTime         @updatedAt
+
+  usuario       Usuario        @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  eventosStripe EventoStripe[]
+
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@map("assinaturas")
+}
+
+model EventoStripe {
+  id           String   @id // stripe event id pra idempotência
+  assinaturaId String?
+  tipo         String
+  payloadJson  Json
+  processadoEm DateTime @default(now())
+
+  assinatura Assinatura? @relation(fields: [assinaturaId], references: [id])
+
+  @@index([tipo])
+  @@map("eventos_stripe")
+}
+
+// =============================================================================
+// CONTEÚDO DAS TRILHAS
+// =============================================================================
+
+model Tema {
+  id              String     @id @default(cuid())
+  slug            String     @unique
+  nome            String
+  // Subtítulo do módulo (ex: "O Peito Leve" pra Ansiedade)
+  subtituloModulo String?
+  descricaoCurta  String
+  descricaoLonga  String
+  // Slug da região no mapa emocional (ex: "tempestade-do-mar", "redemoinho")
+  regiaoMapaSlug  String
+  // Token Tailwind da paleta Oceano Calmo (ex: "oceano-500", "coral-500")
+  corPrincipal    String
+  iconeSlug       String
+  ordemExibicao   Int
+  premium         Boolean    @default(true)
+  ativo           Boolean    @default(true)
+  status          StatusTema @default(DISPONIVEL)
+  criadoEm        DateTime   @default(now())
+  atualizadoEm    DateTime   @updatedAt
+
+  exercicios      Exercicio[]
+  sessoes         Sessao[]
+  trilhas         TrilhaUsuario[]
+  perfisInteresse PerfilTema[]
+
+  @@map("temas")
+}
+
+/// Sessão clínica em 4 fases (acolhimento → exercício gestual → áudio → âncora).
+/// Estrutura definida pela consultora Rejane.
+model Sessao {
+  id                   String                 @id @default(cuid())
+  temaId               String
+  slug                 String
+  // Título do módulo da Rejane (ex: "O Peito Leve")
+  titulo               String
+  // Texto poético-clínico que abre a sessão
+  textoAcolhimento     String
+  // Mecânica gestual desta sessão
+  mecanicaInterativa   TipoMecanicaInterativa
+  // URL do MP3 (null = áudio em produção, mostra roteiro)
+  audioUrl             String?
+  audioDuracaoSegundos Int?
+  // Roteiro do áudio em markdown — exibido se sem áudio
+  roteiroAudioMarkdown String?
+  // Frase de fechamento ("Eu me vejo, eu me aceito...")
+  seloAncora           String
+  ordem                Int                    @default(1)
+  requisitoPremium     Boolean                @default(true)
+  ativo                Boolean                @default(true)
+  criadoEm             DateTime               @default(now())
+  atualizadoEm         DateTime               @updatedAt
+
+  tema       Tema              @relation(fields: [temaId], references: [id], onDelete: Cascade)
+  conclusoes SessaoConcluida[]
+
+  @@unique([temaId, slug])
+  @@map("sessoes")
+}
+
+model SessaoConcluida {
+  id              String   @id @default(cuid())
+  sessaoId        String
+  usuarioId       String
+  concluidaEm     DateTime @default(now())
+  reflexaoCifrada String?
+
+  sessao  Sessao  @relation(fields: [sessaoId], references: [id], onDelete: Cascade)
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@unique([sessaoId, usuarioId])
+  @@index([usuarioId, concluidaEm])
+  @@map("sessoes_concluidas")
+}
+
+model Exercicio {
+  id               String        @id @default(cuid())
+  temaId           String
+  slug             String
+  titulo           String
+  descricao        String
+  tipo             TipoExercicio
+  corpoMdx         String
+  duracaoMinutos   Int
+  ordem            Int
+  requisitoPremium Boolean       @default(true)
+  ativo            Boolean       @default(true)
+  criadoEm         DateTime      @default(now())
+  atualizadoEm     DateTime      @updatedAt
+
+  tema       Tema                 @relation(fields: [temaId], references: [id], onDelete: Cascade)
+  conclusoes ExercicioConcluido[]
+
+  @@unique([temaId, slug])
+  @@index([temaId, ordem])
+  @@map("exercicios")
+}
+
+// =============================================================================
+// ATIVIDADE DIÁRIA
+// =============================================================================
+
+model CheckIn {
+  id              String      @id @default(cuid())
+  usuarioId       String
+  tipo            TipoCheckIn
+  humor           Int // 1-10
+  energia         Int // 1-10
+  gatilhosCifrado String?
+  // JSON: { pescoco: 8, peito: 6, estomago: 3 } — intensidade 0-10 por região
+  sentidoNoCorpo  Json?
+  temaContextoId  String?
+  criadoEm        DateTime    @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, criadoEm])
+  @@map("check_ins")
+}
+
+model EntradaDiario {
+  id                String    @id @default(cuid())
+  usuarioId         String
+  promptUsado       String?
+  // Conteúdo livre do usuário. SEMPRE cifrado (LGPD Art. 11).
+  conteudoCifrado   String
+  tamanhoCaracteres Int
+  // sha256 do texto claro pra dedupe/diff sem decifrar
+  hashConteudo      String
+  // Análise da IA: { distorcoes: [...], padroes: [...], temas: [...] }
+  analiseIaJson     Json?
+  analisadoEm       DateTime?
+  criadoEm          DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, criadoEm])
+  @@index([hashConteudo])
+  @@map("entradas_diario")
+}
+
+model TrilhaUsuario {
+  id          String    @id @default(cuid())
+  usuarioId   String
+  temaId      String
+  iniciadaEm  DateTime  @default(now())
+  concluidaEm DateTime?
+  etapaAtual  Int       @default(1)
+
+  usuario              Usuario              @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tema                 Tema                 @relation(fields: [temaId], references: [id], onDelete: Cascade)
+  exerciciosConcluidos ExercicioConcluido[]
+
+  @@unique([usuarioId, temaId])
+  @@map("trilhas_usuario")
+}
+
+model ExercicioConcluido {
+  id              String   @id @default(cuid())
+  trilhaUsuarioId String
+  exercicioId     String
+  concluidoEm     DateTime @default(now())
+  anotacaoCifrada String?
+  // JSON com respostas a perguntas reflexivas do exercício
+  reflexaoJson    Json?
+
+  trilhaUsuario TrilhaUsuario @relation(fields: [trilhaUsuarioId], references: [id], onDelete: Cascade)
+  exercicio     Exercicio     @relation(fields: [exercicioId], references: [id], onDelete: Cascade)
+
+  @@unique([trilhaUsuarioId, exercicioId])
+  @@map("exercicios_concluidos")
+}
+
+// =============================================================================
+// CLÍNICO, SEGURANÇA E AUDITORIA
+// =============================================================================
+
+model PontuacaoEscala {
+  id                 String             @id @default(cuid())
+  usuarioId          String
+  escala             EscalaTipo
+  // Array de respostas (cada item: { questaoIndice: n, valor: n })
+  respostasJson      Json
+  pontuacao          Int
+  faixaInterpretacao FaixaInterpretacao
+  aplicadaEm         DateTime           @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, escala, aplicadaEm])
+  @@map("pontuacoes_escalas")
+}
+
+/// Log imutável de detecções de risco. Auditável (LGPD + CFP).
+model EventoSeguranca {
+  id                  String                @id @default(cuid())
+  usuarioId           String
+  origem              OrigemEventoSeguranca
+  nivel               NivelRisco
+  // JSON: { termos: ["...", "..."], score: 0.87 } — sem o texto original
+  palavrasChaveJson   Json
+  encaminhamentoFeito EncaminhamentoTipo
+  resolvidoEm         DateTime?
+  observacoesCifradas String?
+  criadoEm            DateTime              @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, criadoEm])
+  @@index([nivel, criadoEm])
+  @@map("eventos_seguranca")
+}
+
+model PlanoSeguranca {
+  id                        String   @id @default(cuid())
+  usuarioId                 String
+  // Todos os campos abaixo são JSON cifrado (string base64 do AES-GCM)
+  sinaisAlertaCifrado       String
+  estrategiasCifrado        String
+  redeApoioCifrado          String
+  contatosEmergenciaCifrado String
+  criadoEm                  DateTime @default(now())
+  atualizadoEm              DateTime @updatedAt
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, criadoEm])
+  @@map("planos_seguranca")
+}
+
+/// Síntese semanal de progresso. Dados agregados + análise IA persistida
+/// pra não regenerar a cada visita. Refresha após 3+ dias ou sob demanda.
+model SinteseSemanal {
+  id             String    @id @default(cuid())
+  usuarioId      String
+  periodoInicio  DateTime
+  periodoFim     DateTime
+  totalCheckIns  Int       @default(0)
+  totalDiarios   Int       @default(0)
+  mediaHumor     Float?
+  mediaEnergia   Float?
+  tendenciaHumor String? // "subindo" | "descendo" | "estavel"
+  diasStreak     Int       @default(0)
+  analiseIaJson  Json?
+  geradaEm       DateTime  @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, periodoInicio])
+  @@map("sinteses_semanais")
+}
+
+/// Log de auditoria de toda chamada ao LLM. Imutável.
+model InteracaoIA {
+  id                     String         @id @default(cuid())
+  usuarioId              String
+  modelo                 String
+  promptHash             String
+  // Entrada JÁ anonimizada (PII removida) antes de salvar e enviar pra IA
+  entradaAnonimizadaJson Json
+  respostaJson           Json
+  latenciaMs             Int
+  tokensEntrada          Int
+  tokensSaida            Int
+  custoEstimadoCentavos  Int            @default(0)
+  filtradaPorRisco       Boolean        @default(false)
+  tipoOperacao           TipoOperacaoIA
+  criadoEm               DateTime       @default(now())
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@index([usuarioId, criadoEm])
+  @@index([tipoOperacao, criadoEm])
+  @@map("interacoes_ia")
+}
