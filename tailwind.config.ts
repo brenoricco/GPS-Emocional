@@ -2,72 +2,102 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: ["./src/**/*.{ts,tsx,mdx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
         // =====================================================================
-        // Paleta "Oceano Calmo"
-        // Pensada pra alguém abrindo o app às 2h da manhã, em crise.
-        // Tons quietos, baixo contraste, evocando mar profundo, brisa e areia.
+        // Paleta "Céu Noturno" (v2 — definida pela consultora Rejane)
+        // Fundo escuro constante como identidade visual — não é dark mode toggle.
         // =====================================================================
 
-        fundo: {
-          // Espuma quase branca (light) e azul-petróleo profundo (dark, dormente)
-          claro: "#F4F8FA",
-          escuro: "#142028",
+        noite: {
+          DEFAULT: "#0B132B",
+          50: "#E7E9F0",
+          100: "#C7CCDA",
+          200: "#8F98B6",
+          300: "#576692",
+          400: "#2E3D6C",
+          500: "#0B132B",
+          600: "#090F22",
+          700: "#070C1A",
+          800: "#050811",
+          900: "#020408",
         },
 
-        // Tons principais — azul-petróleo, profundidade emocional clínico-amigável
-        // Ancorada em #1B6C79 (500) e #283C49 (800) da paleta Oceano Calmo
-        oceano: {
-          50: "#ECF5F7",
-          100: "#D0E8ED",
-          200: "#A5D3DC",
-          300: "#6FBDC9",
-          400: "#2E96A8",
-          500: "#1B6C79",
-          600: "#195A66",
-          700: "#224B5A",
-          800: "#283C49",
-          900: "#1A2B35",
+        bruma: {
+          DEFAULT: "#F4F6F9",
+          soft: "#E4E8EF",
+          muted: "#B7BFCE",
         },
 
-        // Verde-água / teal — regulação somática, respiração, alívio
-        brisa: {
-          50: "#EDF7F4",
-          100: "#D2EBE4",
-          200: "#A6D6C8",
-          300: "#76BCAB",
-          400: "#4FA08C",
-          500: "#338670",
-          600: "#266856",
-          700: "#1B4C3F",
-          800: "#11332A",
-          900: "#0A1F1A",
+        "rosa-flor": {
+          DEFAULT: "#FFB7C5",
+          50: "#FFF4F7",
+          100: "#FFE4EB",
+          200: "#FFCFDB",
+          300: "#FFB7C5",
+          400: "#FF95AA",
+          500: "#F27390",
+          600: "#D95778",
+          700: "#B34362",
         },
 
-        // Cinza cool — superfícies neutras, divisores, texto sobre fundo escuro
-        // Ancorada em #BBBBBB (300) e #ACB3B3 (400) da paleta Oceano Calmo
-        areia: {
-          50: "#F8F9F9",
-          100: "#ECEDED",
-          200: "#D5D7D7",
-          300: "#BBBBBB",
-          400: "#ACB3B3",
-          500: "#8E9494",
-          600: "#6F7575",
-          700: "#525858",
-          800: "#383C3C",
-          900: "#1F2222",
+        orquidea: {
+          DEFAULT: "#C77DFF",
+          400: "#DBA5FF",
+          500: "#C77DFF",
+          600: "#A85BE5",
+          700: "#8340B8",
         },
 
-        // Alerta gentil — coral acolhedor, usado SOMENTE em risco/emergência.
-        // Contrasta com o azul sem a agressividade do vermelho.
-        coral: {
-          400: "#EE9784",
-          500: "#E07D6A",
-          600: "#C56350",
-          700: "#9F4F40",
+        "azul-ceu": {
+          DEFAULT: "#4A90E2",
+          400: "#7AB0EE",
+          500: "#4A90E2",
+          600: "#3670BE",
+          700: "#265693",
+        },
+
+        lavanda: {
+          DEFAULT: "#B39DDB",
+          400: "#C8B7E5",
+          500: "#B39DDB",
+          600: "#957BC1",
+          700: "#725D96",
+        },
+
+        "amarelo-sol": {
+          DEFAULT: "#FFE082",
+          400: "#FFE99E",
+          500: "#FFE082",
+          600: "#E5C351",
+          700: "#B99A34",
+        },
+
+        dourado: {
+          DEFAULT: "#D4AF37",
+          400: "#E5C558",
+          500: "#D4AF37",
+          600: "#AF8E2A",
+          700: "#856B1F",
+        },
+
+        // ---- Alertas ----
+        atencao: {
+          DEFAULT: "#FFA726",
+          400: "#FFBB5A",
+          500: "#FFA726",
+          600: "#D68613",
+          700: "#A56610",
+        },
+
+        emergencia: {
+          DEFAULT: "#EF5350",
+          400: "#F58583",
+          500: "#EF5350",
+          600: "#D03B38",
+          700: "#A22B29",
         },
       },
 
@@ -75,19 +105,65 @@ const config: Config = {
         sans: ["var(--fonte-base)", "system-ui", "sans-serif"],
       },
 
+      // Escala tipográfica mobile-first — base 16px, corpo confortável em 4G brasileiro
+      fontSize: {
+        // acolhimento (corpo com peso emocional) — leitura calma
+        acolhimento: ["1.0625rem", { lineHeight: "1.65", letterSpacing: "0.005em" }],
+        ancora: ["1.125rem", { lineHeight: "1.5", letterSpacing: "0.01em" }],
+      },
+
+      spacing: {
+        // safe-area bottom (iOS notch) — usado em CTAs fixos
+        "safe-bottom": "env(safe-area-inset-bottom)",
+        "safe-top": "env(safe-area-inset-top)",
+        // touch target mínimo (Apple HIG)
+        touch: "44px",
+      },
+
+      minHeight: {
+        touch: "44px",
+        screen: "100svh",
+      },
+      minWidth: {
+        touch: "44px",
+      },
+
+      borderRadius: {
+        "cta": "9999px", // botões CTA arredondados totais
+      },
+
       animation: {
         respirar: "respirar 8s ease-in-out infinite",
-        ondular: "ondular 12s ease-in-out infinite",
+        "brilho-suave": "brilho-suave 3s ease-in-out infinite",
+        "estrela-cadente": "estrela-cadente 2.5s ease-out forwards",
+        "aparecer": "aparecer 400ms ease-out both",
+        "pulsar-cta": "pulsar-cta 2.4s ease-in-out infinite",
       },
 
       keyframes: {
         respirar: {
-          "0%, 100%": { transform: "scale(1)", opacity: "0.8" },
-          "50%": { transform: "scale(1.15)", opacity: "1" },
+          "0%, 100%": { transform: "scale(1)", opacity: "0.85" },
+          "50%": { transform: "scale(1.12)", opacity: "1" },
         },
-        ondular: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-6px)" },
+        "brilho-suave": {
+          "0%, 100%": { opacity: "0.7", filter: "blur(0px)" },
+          "50%": { opacity: "1", filter: "blur(2px)" },
+        },
+        "estrela-cadente": {
+          "0%": { transform: "translate(0, 0) scale(0.5)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "100%": {
+            transform: "translate(60vw, -80vh) scale(0.2)",
+            opacity: "0",
+          },
+        },
+        aparecer: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "pulsar-cta": {
+          "0%, 100%": { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(255,183,197,0.35)" },
+          "50%": { transform: "scale(1.02)", boxShadow: "0 0 0 12px rgba(255,183,197,0)" },
         },
       },
     },

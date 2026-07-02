@@ -14,10 +14,7 @@
     "db:resetar": "prisma migrate reset",
     "db:estudio": "prisma studio",
     "db:popular": "tsx prisma/seed.ts",
-    "db:enviar": "prisma db push",
-    "db:sincronizar-prod": "node scripts/gerar-schema-producao.mjs",
-    "db:gerar:prod": "prisma generate --schema=prisma/schema.production.prisma",
-    "db:push:prod": "prisma db push --schema=prisma/schema.production.prisma --accept-data-loss"
+    "db:enviar": "prisma db push"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

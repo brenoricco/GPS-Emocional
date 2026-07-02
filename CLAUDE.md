@@ -1,18 +1,41 @@
 # CLAUDE.md — GPS Emocional
 
-Você deve atuar como um **Engenheiro de Software Sênior/Staff** colaborando com um **psicólogo-fundador (Brenno)** na construção do **GPS Emocional**, um SaaS B2C de saúde mental.
+Você deve atuar como um **Engenheiro de Software Sênior/Staff** colaborando com um **psicólogo-fundador (Brenno)** na construção do **GPS Emocional**, um app de saúde mental para mulheres.
 
-Mantenha foco em código limpo, arquitetura sustentável, segurança, performance, manutenibilidade — **e responsabilidade clínica**. Este produto cuida de pessoas em sofrimento. Bug em check-in é chato; bug em triagem de risco pode matar.
+Mantenha foco em código limpo, arquitetura sustentável, segurança, performance, manutenibilidade — **e responsabilidade clínica**. Este produto cuida de mulheres em sofrimento. Bug em botão é chato; bug em rota de emergência pode matar.
 
 ---
 
-## Sobre o projeto
+## Sobre o projeto (v2 — pivô de 2026-07)
 
-- **Produto**: GPS Emocional — aplica a metáfora de GPS (localizar estado emocional → definir destino → traçar rota → recalcular em recaída) a temas de sofrimento psíquico.
-- **Modelo**: B2C, freemium (1 tema grátis) + Premium R$ 29,90/mês ou R$ 199/ano + trial 7 dias.
-- **Temas no MVP**: Ansiedade, Relacionamento Tóxico, Traição, Autoestima, Luto, Timidez, Procrastinação/Produtividade Emocional, Trauma de Infância/Família Disfuncional.
-- **Pilares clínicos**: TCC, ACT, mindfulness somático, escalas validadas (GAD-7, PHQ-9, Rosenberg, ECR-R), protocolo de risco com CVV 188.
-- **Diferenciais**: trilhas com fundamento clínico real (assinadas pelo Brenno), componente somático, exportação de relatório pra levar ao psicólogo presencial.
+- **Produto**: GPS Emocional — jornada emocional guiada de sessão única. Usuária abre o app, faz um quiz curto ("como você está se sentindo hoje?"), é direcionada para **um dos 5 módulos**, faz o exercício interativo, ouve o áudio de indução hipnótica, recebe uma âncora e encerra o dia.
+- **Público-alvo**: **exclusivamente mulheres**. Todo copy é escrito no feminino ("acolhida", "sozinha", "orgulhoso de você"). Marketing, onboarding, mensagens e telas assumem esse posicionamento.
+- **Modelo**: **100% gratuito no MVP.** Sem Stripe, sem freemium, sem trial. Foco em validar uso e retenção antes de monetizar.
+- **Fluxo linear único** (não há mais temas paralelos, mapa emocional, check-ins diários, escalas GAD-7/PHQ-9, trilhas multi-sessão ou diário):
+
+```
+Boas-Vindas → Quiz (5 botões coloridos) → Módulo escolhido → Encerramento (Concluir Dia)
+                                                              ↓
+                                                       Histórico de constância
+                                                       ("Você cuidou de si por N dias")
+```
+
+- **Os 5 módulos** (cada um mapeado a uma cor do quiz):
+
+| Nº | Módulo | Sentimento no quiz | Cor do botão | Exercício interativo |
+|---|---|---|---|---|
+| 1 | **Leveza e Paz** | Irritação, cansaço, ansiedade, medo, vontade de ficar só | Rosa Queimado `#C77DFF` | Balão da Calma (respiração 4-2-4 por toque) |
+| 2 | **A Cura do Coração** | Carência, sensação de descartável, medo de ficar sozinha | Laranja `#FFA726` | Reconstruir pilares (arrastar pedras) |
+| 3 | **Rompendo Ciclos e Resgatando Minha Força** | Ameaça, impotência, medo do parceiro | Vermelho Suave `#EF5350` | Cortar os fios do passado (apagar frases-peso) |
+| 4 | **Resgatando as Minhas Cores** | Vazio, choro, sem vontade de viver | Azul Claro `#4A90E2` | Despertar das Cores (3 luzes com micro-ações) |
+| 5 | **Resgate do Meu Valor** | Fracasso, incapacidade, não merecer | Amarelo `#FFE082` | 3 Pilares (Capacidade, Merecimento, Recomeço) |
+
+- **Estrutura de cada módulo** (padrão fixo — 4 fases da Rejane):
+  1. **Texto de acolhimento inicial** (autoria da Rejane, tom feminino)
+  2. **Exercício interativo gestual** (toque, arrastar, pulsar)
+  3. **Áudio de indução hipnótica** (a gravar pela Rejane — ver placeholder abaixo)
+  4. **Âncora do dia** (frase de fixação exibida em destaque)
+- **Consultora clínica**: Rejane (psicóloga) escreve e valida todo copy clínico, roteiros de hipnose e âncoras. Claude nunca inventa conteúdo terapêutico.
 
 ---
 
@@ -20,15 +43,15 @@ Mantenha foco em código limpo, arquitetura sustentável, segurança, performanc
 
 - **Frontend**: Next.js 15 (App Router) + TypeScript + Tailwind + shadcn/ui + Framer Motion
 - **Backend**: Next.js Route Handlers + Server Actions
-- **Banco**: **SQLite em desenvolvimento local** (arquivo `prisma/dev.db`, sem setup), **Postgres em produção** (Railway managed). Schema escrito em modo portável: sem `String[]`, sem operadores JSON no banco, criptografia em camada de aplicação. Trocar = mudar `provider`, regerar migrations.
+- **Banco**: **SQLite em desenvolvimento local** (arquivo `prisma/dev.db`, sem setup), **Postgres em produção** (Railway managed). Schema escrito em modo portável: sem `String[]`, sem operadores JSON no banco. Trocar = mudar `provider`, regerar migrations.
 - **ORM**: Prisma
 - **Auth**: Auth.js v5 (magic link via Resend + Google OAuth)
-- **IA**: Groq Cloud (free tier) — **Llama 4 Scout** (padrão, rápido) + **Qwen 3** (análise profunda em PT-BR). Acesso sempre via camada de abstração `lib/ai/` (provider-agnostic) com fallback (Together.ai/OpenRouter) e cache. Pronta pra trocar por Claude/OpenAI no futuro sem reescrita.
-- **Pagamento**: Stripe
 - **Email**: Resend
 - **Analytics**: PostHog Cloud
 - **Deploy**: Railway (Next.js + Postgres no mesmo projeto, deploy via GitHub)
 - **Mobile**: PWA hoje, Capacitor depois (mesmo código vira app nativo)
+- **Sem IA no MVP**: o quiz é determinístico (5 botões → 5 módulos fixos), exercícios são estáticos, âncoras e áudios são conteúdo autoral. Camada `lib/ia/` **não existe nesta versão**. Se um dia voltar, será para features complementares (nunca substituindo autoria clínica da Rejane).
+- **Sem pagamento no MVP**: Stripe fora. Se um dia voltar, entra em módulo isolado.
 
 ---
 
@@ -55,9 +78,8 @@ Mantenha foco em código limpo, arquitetura sustentável, segurança, performanc
 - Sempre escrever código **tipado e explícito** (TypeScript estrito, sem `any` sem justificativa).
 - Sempre tratar erros de forma clara (Result/throw bem delimitados, mensagens úteis).
 - Sempre pensar em escalabilidade, mas sem complicar o MVP.
-- Sempre pensar em **problemas de concorrência** (transações, race conditions em check-ins, idempotência em webhooks Stripe).
-- Sempre lembrar que a aplicação será utilizada por **milhares de usuários simultaneamente**.
-- Sempre lembrar que a infraestrutura de internet é instável — o sistema precisa ser pensado como **offline-friendly, resiliente e leve** (PWA com Service Worker, otimistic UI em check-ins, sync quando voltar).
+- Sempre lembrar que a aplicação será utilizada por **milhares de usuárias simultaneamente**.
+- Sempre lembrar que a infraestrutura de internet é instável — o sistema precisa ser pensado como **offline-friendly, resiliente e leve** (PWA com Service Worker, sincronização eventual do histórico de constância quando voltar online).
 
 ---
 
@@ -65,163 +87,234 @@ Mantenha foco em código limpo, arquitetura sustentável, segurança, performanc
 
 Este é um produto de saúde mental. As regras abaixo têm peso igual ou maior que as de engenharia:
 
-- **Nunca diagnosticar.** App não dá diagnóstico. Nem por IA, nem por regra. Pode educar sobre sintomas, nunca rotular.
+- **Nunca diagnosticar.** O app **não dá diagnóstico**. O quiz é uma porta de entrada para acolhimento contextual, **não** um instrumento de rastreio clínico.
 - **Nunca recomendar medicação, alterar dose, ou opinar sobre tratamento medicamentoso.**
 - **Nunca substituir terapia.** Posicionamento sempre: ferramenta complementar, não substituta.
-- **Triagem de risco é código crítico.** Toda entrada de texto livre (diário, chat com IA, check-in) passa por detector de risco suicida (palavras-chave + classificador). Risco detectado → encaminhamento imediato **CVV 188** + plano de segurança guiado. Log auditável de todo evento de risco.
-- **CFP (Conselho Federal de Psicologia)**: respeitar limites éticos do CFP pra ferramentas digitais de saúde mental. Não fazer chatbot terapêutico aberto estilo "fale comigo como se eu fosse seu terapeuta" — risco regulatório e clínico alto.
-- **Conteúdo terapêutico só pelo Brenno.** Eu (Claude) **nunca invento conteúdo clínico** (técnicas, exercícios, psicoeducação) sem que o Brenno valide/escreva. Posso ajudar a estruturar e revisar texto, mas a autoria clínica é dele (psicólogo com credencial).
-- **IA com guardrails rígidos em DUAS camadas**:
-  - **Camada 1 — Classificador de risco LOCAL (determinístico, sempre roda primeiro)**: regex + lista curada de termos + scoring. Detecta ideação suicida, autolesão, violência sofrida ou cometida. **Risco detectado aqui → CVV 188 imediato, NÃO passa pro LLM.** Auditável, testável, sem dependência de rede.
-  - **Camada 2 — LLM (Groq / Llama 4 Scout / Qwen 3)**: só recebe input já filtrado e anonimizado. System prompt com (1) não-diagnóstico, (2) não-medicação, (3) tom acolhedor e não-prescritivo, (4) instrução de escalation se detectar risco residual. Toda resposta passa por filtro de saída antes de ser exibida ao usuário.
-  - **Anonimização antes do Groq**: remover PII (nome, idade exata, cidade, identificadores) de qualquer texto enviado pra API externa. Modelos open-source no Groq processam fora do Brasil — anonimização é obrigatória pra LGPD Art. 11.
-  - **Revisão clínica obrigatória**: todo prompt do sistema é escrito/validado pelo Brenno (psicólogo) antes de ir pra produção. Versionar prompts em git, com changelog clínico.
+- **CFP (Conselho Federal de Psicologia)**: respeitar limites éticos do CFP para ferramentas digitais de saúde mental. Sem chatbot terapêutico aberto.
+- **Conteúdo terapêutico só pela Rejane (psicóloga consultora).** Claude **nunca inventa** textos de acolhimento, roteiros de hipnose, âncoras ou instruções de exercício. Pode ajudar a estruturar/revisar visualmente, mas autoria clínica é dela.
+- **Módulo 4 (Depressão) é o mais crítico.** Vazio profundo, choro constante e "sem vontade de viver" indicam ideação suicida potencial. O botão CVV **precisa estar sempre visível** neste módulo, com destaque, sem depender de scroll até o final.
+- **Módulo 3 (Relacionamento abusivo) exige segurança adicional**: nada de histórico visível no app que possa expor a usuária (parceiro conferindo o celular). Considerar modo "esconder rapidamente" (botão pânico que troca a tela por conteúdo neutro).
+
+### Números de emergência — atenção crítica
+
+Os documentos entregues pela Rejane contêm um **erro perigoso**: mencionam "LIGUE 181". Isso **está errado** e será corrigido em código:
+
+| Número | O que é | Quando usar no app |
+|---|---|---|
+| **188** | **CVV — Centro de Valorização da Vida** (24h, gratuito, sigiloso) | **Sempre** que houver mensagem de emergência emocional. É o único número de saúde mental. |
+| **180** | Central de Atendimento à Mulher (violência) | **Complementar** apenas no Módulo 3 (relacionamento abusivo/tóxico). Nunca sozinho. |
+| ~~181~~ | Disque-denúncia da PRF | **NÃO usar.** Sem relação com saúde mental. Erro nos docs. |
+
+Regra fixa: **toda referência a "ligue" em contexto de emergência emocional deve ser 188 (CVV)**. Se algum arquivo de conteúdo trouxer 181, corrigir imediatamente.
 
 ---
 
 ## LGPD e dados sensíveis
 
-Dados emocionais, diários, check-ins, scores de escalas clínicas são **dados pessoais sensíveis (Art. 11 LGPD)**. Tratamento exige base legal específica e cuidados extras:
+Mesmo com MVP enxuto (sem diário, sem chat), os dados coletados ainda são sensíveis:
 
-- Consentimento explícito e informado no onboarding (não pode ser combinado com outros consentimentos genéricos).
-- Criptografia em repouso para campos sensíveis (diário, notas). Postgres `pgcrypto` ou criptografia na aplicação.
-- Logs **nunca** podem conter conteúdo de diário, mensagens da IA, ou respostas de escalas em texto claro.
-- Direito à exclusão (Art. 18): rota e função pra apagar conta + todos os dados em até 15 dias.
-- Direito à portabilidade: exportação em formato legível (JSON + PDF).
-- Hospedagem em região com adequação (Railway tem regiões em EUA/EU — verificar se há opção SP ou justificar transferência internacional na política).
-- Política de Privacidade e Termos com cláusulas específicas pra saúde mental antes do lançamento.
+- **O que persistimos**: identidade da usuária (email), resposta do quiz (qual módulo escolheu), timestamp, contador de constância (dias consecutivos).
+- **O que NÃO persistimos no MVP**: texto livre de diário, histórico de chat, respostas de escalas — porque não existem.
+- Consentimento explícito e informado no onboarding (dados sensíveis do Art. 11 LGPD — sofrimento psíquico revelado).
+- Logs **nunca** podem conter qual módulo específico uma usuária escolheu em uma data específica (agregar por dia/coorte, nunca por indivíduo em logs).
+- Direito à exclusão (Art. 18): rota e função para apagar conta + todos os dados em até 15 dias.
+- Direito à portabilidade: exportação em formato legível (JSON simples com histórico de constância).
+- Hospedagem em região com adequação (Railway EUA/EU — declarar transferência internacional na política).
+- Política de Privacidade e Termos com cláusulas específicas para saúde mental antes do lançamento.
 
 ---
 
 ## UI/UX — mobile-first absoluto (99% smartphone)
 
-**Princípio-mãe**: se não funcionou bem com polegar único em iPhone SE no metrô, não está pronto. Desktop é caso de borda. Brenno confirmou que 99% dos acessos virão de smartphone.
+**Princípio-mãe**: se não funcionou bem com polegar único em iPhone SE no metrô às 23h com uma mão só e a outra segurando alça, não está pronto. Desktop é caso de borda. 99% dos acessos virão de smartphone.
 
 Checklist obrigatório em todo componente:
 
 - **Mobile-first no Tailwind**: comece sem prefixo (mobile), use `sm:`/`md:`/`lg:` pra adicionar — nunca pra remover.
-- **Touch targets ≥ 44×44px** (Apple HIG) / **48×48px** (Material 3). `min-h-[44px]` em botões.
-- **Thumb zone**: ações primárias na metade inferior da tela. CTAs embaixo, não em cima.
-- **Bottom navigation** em mobile (`fixed bottom-0` com safe area), não top tabs.
+- **Touch targets ≥ 44×44px** (Apple HIG) / **48×48px** (Material 3). `min-h-[44px]` em botões. Espaçamento entre alvos ≥ 8px.
+- **Thumb zone**: ações primárias na metade inferior da tela. CTAs embaixo, não em cima. Regra dos 75% inferiores para tudo que é interativo primário.
 - **Bottom sheets** > modais centralizados pra ações contextuais.
-- **Safe areas** sempre: `env(safe-area-inset-bottom)` em rodapés/CTAs fixos.
-- **Tipografia base 16px** no mobile (não 14). Line-height ≥ 1.5.
-- **Contraste WCAG AA** mínimo (4.5:1 texto normal, 3:1 grande).
-- **Gestures**: swipe entre etapas do onboarding, pull-to-refresh em listas. (Framer Motion / react-swipeable).
-- **Haptics**: Vibration API em respiração, conclusão, confirmação. Opt-out via configuração.
-- **Teclado virtual**: `scroll-margin-top` em inputs, `viewport-fit=cover`, evitar que cubra campo focado.
-- **Inputs corretos**: `inputMode`, `type`, `autoComplete`, `enterKeyHint` semânticos.
+- **Safe areas** sempre: `env(safe-area-inset-bottom)` em rodapés/CTAs fixos, `env(safe-area-inset-top)` em cabeçalhos com notch.
+- **Tipografia base 16px** no mobile (não 14 — 14 dispara zoom no iOS Safari em inputs). Line-height ≥ 1.5. Corpo com texto de acolhimento: 17-18px é ideal.
+- **Contraste WCAG AA** mínimo (4.5:1 texto normal, 3:1 grande). Fundo `#0B132B` + texto `#F4F6F9` = ~15:1 (ótimo).
+- **Gestures**: press-and-hold no Balão da Calma (Módulo 1), drag-and-drop nas pedras (Módulo 2), tap-to-dismiss nas frases-peso (Módulo 3). Cancelamento sempre reversível.
+- **Haptics**: Vibration API sutil na conclusão de ciclo de respiração, ao completar exercício, ao pressionar CTA principal. Nunca em navegação. Opt-out via configuração.
+- **Teclado virtual**: `scroll-margin-top` em inputs, `viewport-fit=cover`, evitar que cubra campo focado. No MVP há **muito pouca entrada de texto** (só email no login), então esse ponto é menos crítico do que era antes.
+- **Inputs corretos**: `inputMode="email"`, `type="email"`, `autoComplete="email"`, `enterKeyHint="go"` no login.
 - **Skeleton loaders > spinners**. Spinner só pra <500ms.
-- **`prefers-reduced-motion`** respeitado (já configurado em `globals.css`).
-- **PWA instalável**: manifest, ícones, splash, service worker, offline-first em check-ins (IndexedDB via `idb`).
-- **Performance no 4G médio brasileiro**: LCP < 2.5s, JS inicial < 200kb, `next/image` + `next/font` sempre.
-- **Modo escuro automático** funcionando (`prefers-color-scheme`).
+- **`prefers-reduced-motion`** respeitado — o pulsar do Balão, o brilho ao concluir, as estrelas cadentes: todos precisam de fallback sem animação para quem tem sensibilidade vestibular ou epilepsia. **Não é opcional.**
+- **PWA instalável**: manifest, ícones, splash com azul-noturno, service worker, offline-first (usuária deve conseguir abrir o quiz e um módulo mesmo sem internet — sincroniza constância depois).
+- **Performance no 4G médio brasileiro**: LCP < 2.5s, JS inicial < 200kb, `next/image` + `next/font` sempre. Áudios de hipnose lazy-loaded (só quando entrar na tela do player).
 - **One-handed friendly**: testar com polegar único em aparelho de 6.5" antes de marcar como pronto.
-- **Network-tolerant**: dado emocional NUNCA se perde por falha de rede. Salva local, sincroniza depois.
-- **Portrait + landscape**: funciona em ambas orientações sem quebrar.
+- **Network-tolerant**: interação com módulo **NUNCA** trava por falta de rede. Exercícios são 100% client-side. Só o registro de "concluí o dia" vai para o servidor (com retry + fila offline).
+- **Portrait**: assumir sempre. Landscape funciona mas não é otimizado — o Balão da Calma em landscape fica estranho, aceitar.
+- **Fundo sempre escuro (`#0B132B`)**. Não é dark mode toggle — é a identidade do app. `prefers-color-scheme` é ignorado. Contraste alto com texto claro `#F4F6F9`.
+- **Movimento com propósito**: pulsação do Balão = respiração. Brilho nas frases-peso desaparecendo = libertação. Estrelas cadentes = transição para conclusão. Nunca animação decorativa gratuita.
 
 ---
 
-## Paleta de cores — "Oceano Calmo"
+## Paleta de cores — "Céu Noturno" (v2)
 
-Tokens semânticos definidos em `tailwind.config.ts`. Nunca use cores cruas (hex/rgb) em componentes — sempre os tokens abaixo:
+**Identidade visual definida pela Rejane** (docs em `contexto/CORES DO APP.docx`). Tokens semânticos definidos em `tailwind.config.ts`. **Nunca** use cores cruas (hex) em componentes — sempre os tokens abaixo.
 
-| Token | Uso | Sensação |
+### Cores base
+
+| Token Tailwind | Hex | Uso | Sensação |
+|---|---|---|---|
+| `bg-noite` | `#0B132B` | **Fundo principal de todas as telas** | Azul-escuro noturno, céu profundo, descanso ocular |
+| `text-bruma` | `#F4F6F9` | Texto sobre fundo escuro | Branco suave, off-white, sem brilho excessivo |
+
+### Cores de interação
+
+| Token | Hex | Uso |
 |---|---|---|
-| `fundo-claro` / `fundo-escuro` | background principal (claro; escuro dormente, sem dark mode automático) | Espuma quase branca / azul-petróleo profundo |
-| `oceano-50..900` | paleta principal — texto, headings, fundos de seção | Azul-petróleo, profundidade emocional, clínico-amigável |
-| `brisa-50..900` | paleta somática — respiração, CTAs de acolhimento, regulação | Verde-água/teal, alívio |
-| `areia-50..900` | superfícies neutras, divisores, texto sobre fundo escuro | Cinza cool, calma neutra |
-| `coral-400..700` | **SOMENTE** alerta, emergência, ações de risco | Calor contrastante, sem agressividade |
+| `rosa-flor` | `#FFB7C5` | **CTA principal** ("Vamos lá", "Concluir Dia"). Texto do botão em `noite` para contraste. |
+| `azul-ceu` | `#4A90E2` | Links, abas secundárias, Módulo 4 (Depressão/Cores) |
 
-**Regra de uso do `coral`**: nunca em ação de UI comum (botão de salvar, link). Reservado pra:
-- Botão de Emergência Emocional
-- Link/telefone do CVV 188
-- Avisos de risco detectado
-- Confirmações destrutivas (apagar conta, dados)
+### Cores de sentimento (uma por módulo do quiz)
+
+| Token | Hex | Módulo |
+|---|---|---|
+| `orquidea` | `#C77DFF` | Módulo 1 — Leveza e Paz (ansiedade/burnout) |
+| `laranja` | `#FFA726` | Módulo 2 — A Cura do Coração (carência/traição) |
+| `vermelho-suave` | `#EF5350` | Módulo 3 — Rompendo Ciclos (relacionamento abusivo) — **também é a cor de emergência** |
+| `azul-ceu` | `#4A90E2` | Módulo 4 — Resgatando as Cores (depressão) |
+| `amarelo-sol` | `#FFE082` | Módulo 5 — Resgate do Valor (autoestima) |
+| `lavanda` | `#B39DDB` | Introspecção, tristeza, complementar do Módulo 1 (Balão da Calma) |
+| `dourado` | `#D4AF37` | Autoestima em destaque, moeda de ouro, âncora do Módulo 5 |
+
+### Cores de alerta
+
+| Token | Hex | Uso |
+|---|---|---|
+| `atencao` | `#FFA726` | Avisos importantes não-críticos |
+| `emergencia` | `#EF5350` | **Botão CVV 188**, avisos de risco, ações destrutivas confirmadas |
+
+### Regras de uso
+
+- **Botão CTA principal**: sempre `rosa-flor` com texto `noite`. Consistência garante affordance.
+- **Botão de emergência (CVV 188)**: sempre `emergencia` com texto `bruma`. **Nunca reciclar essa cor** para ação comum.
+- **Cores de sentimento no quiz**: usadas literalmente nos 5 botões da Tela 2. Fora do quiz, cada cor "puxa" a identidade do seu módulo (elementos de destaque, âncora, brilhos).
+- **Gradientes**: permitidos entre `rosa-flor ↔ lavanda` (Balão da Calma) e `dourado ↔ amarelo-sol` (Módulo 5). Nunca inventar gradientes fora dessas duas combinações sem aprovação da Rejane.
 
 ---
 
 ## Convenção de nomenclatura (PT-BR no domínio)
 
-O código de domínio é escrito em **português brasileiro**. Misturar com termos técnicos universais é inevitável e está OK — o objetivo é manter o domínio do negócio expressivo e próximo da linguagem clínica.
+O código de domínio é escrito em **português brasileiro**. Termos técnicos universais em inglês continuam ok.
 
 | Categoria | Convenção | Exemplo |
 |---|---|---|
-| Modelos, services, repositórios, componentes do negócio | **PT-BR** | `usuario.service.ts`, `Diario`, `criarCheckIn()`, `humorRegistrado` |
+| Modelos, services, repositórios, componentes do negócio | **PT-BR** | `usuaria.service.ts`, `Modulo`, `iniciarModulo()`, `constanciaDias` |
 | Termos técnicos universais já em jargão dev | **Inglês** | `webhook`, `payload`, `cache`, `token`, `hash`, `middleware`, `prop`, `state`, `schema`, `migration` |
 | Bibliotecas externas (shadcn/ui, Next.js APIs) | **Inglês** (não mexer) | `components/ui/button.tsx`, `NextRequest`, `Server Action` |
 | Variáveis técnicas locais (handlers de erro, response) | **Inglês** se PT-BR soar forçado | `response`, `error`, `result` |
-| Variáveis de domínio | **PT-BR** | `usuario`, `temaSelecionado`, `respiracaoAtiva`, `gatilhoIdentificado` |
-| Pastas de domínio | **PT-BR** kebab-case | `mapa-emocional/`, `respiracao/`, `seguranca/` |
-| Arquivos | kebab-case PT-BR com sufixo de papel | `cliente.service.ts`, `usuario.repository.ts`, `mapa-emocional.tsx` |
-| Modelos Prisma | **PascalCase PT-BR** | `Usuario`, `CheckIn`, `Diario`, `Trilha`, `Tema`, `EventoSeguranca` |
-| Tabelas Postgres | **snake_case PT-BR** (via @@map) | `usuarios`, `check_ins`, `eventos_seguranca` |
-| Enums | **SCREAMING_SNAKE_CASE PT-BR** | `HumorTipo.MUITO_TRISTE`, `RiscoNivel.CRITICO` |
+| Variáveis de domínio | **PT-BR** feminino quando referir usuária | `usuaria`, `moduloEscolhido`, `respiracaoAtiva`, `ancoraDoDia` |
+| Pastas de domínio | **PT-BR** kebab-case | `modulos/`, `quiz/`, `seguranca/` |
+| Arquivos | kebab-case PT-BR com sufixo de papel | `usuaria.service.ts`, `modulo.repository.ts`, `balao-da-calma.tsx` |
+| Modelos Prisma | **PascalCase PT-BR** | `Usuaria`, `SessaoModulo`, `Constancia` |
+| Tabelas Postgres | **snake_case PT-BR** (via @@map) | `usuarias`, `sessoes_modulo`, `constancias` |
+| Enums | **SCREAMING_SNAKE_CASE PT-BR** | `ModuloTipo.LEVEZA_E_PAZ`, `ModuloTipo.CURA_DO_CORACAO` |
 
-**Regra prática**: se está descrevendo o negócio (o que o usuário sente, faz, registra), é PT-BR. Se está descrevendo plumbing técnico (rede, infra, framework), pode ser inglês.
+**Regra prática**: se está descrevendo o negócio (o que a usuária sente, escolhe, conclui), é PT-BR feminino. Se está descrevendo plumbing técnico (rede, infra, framework), pode ser inglês.
 
 ---
 
-## Estrutura de pastas
+## Estrutura de pastas (v2)
 
 ```
 D:\Projetos\GPS Emocional\
   src/
     app/
-      (autenticacao)/       entrar, registrar, link-magico (callback)
-      (acolhimento)/        bem-vindo, localizar, mapa, rota (onboarding emocional)
-      (aplicacao)/          painel, check-in, diario, trilhas/[tema], emergencia, semanal, configuracoes
-      api/                  route handlers (webhooks, ia, exportacoes)
-      layout.tsx
-      page.tsx              landing pública
-      globals.css
+      (autenticacao)/       entrar, registrar (magic link + Google)
+      (jornada)/            fluxo linear:
+        boas-vindas/          Tela 1
+        quiz/                 Tela 2
+        modulo/[slug]/        Telas 3-7 (leveza-e-paz | cura-do-coracao | rompendo-ciclos | resgatando-cores | resgate-do-valor)
+        encerramento/         Tela 8 (Concluir Dia)
+      api/                  route handlers (auth callbacks, exportações LGPD)
+      layout.tsx            layout raiz (fundo noite, texto bruma, safe-areas)
+      page.tsx              landing pública OU redireciona para (jornada)/boas-vindas se logada
+      globals.css           tokens de cor CSS, prefers-reduced-motion
     componentes/
       ui/                   primitivos shadcn (inglês — biblioteca externa, não editar)
-      mapa-emocional/       SVG do mapa, regiões, marcadores
-      respiracao/           componentes de respiração guiada (4-7-8, box, etc)
-      trilhas/              cards e player de exercícios
-      seguranca/            botao-emergencia, plano-seguranca, modal-cvv
-    servicos/               regras de negócio (orquestram repositórios + IA + lib)
-                            ex: usuario.service.ts, diario.service.ts, checkin.service.ts
-    repositorios/           acesso a dados via Prisma (1 por agregado)
-                            ex: usuario.repository.ts, diario.repository.ts
+      jornada/
+        botao-vamos-la.tsx  CTA rosa-flor com haptic
+        cabecalho-modulo.tsx
+        ancora-do-dia.tsx   componente reutilizável de âncora
+      quiz/
+        botao-sentimento.tsx  botão colorido que mapeia para módulo
+      modulos/
+        leveza-e-paz/         Balão da Calma (press-and-hold, círculo pulsante)
+        cura-do-coracao/      Reconstrução de pilares (drag-and-drop)
+        rompendo-ciclos/      Cortar fios (tap-to-dismiss frases)
+        resgatando-cores/     Despertar das Cores (3 luzes)
+        resgate-do-valor/     3 Pilares (accordion/cards)
+      seguranca/
+        botao-cvv.tsx         botão emergência 188 — sempre visível no M4
+        modal-panico.tsx      esconder rapidamente (M3)
+      audio/
+        player-hipnose.tsx    player com fallback textual do roteiro
+    servicos/               regras de negócio
+                            ex: quiz.service.ts (mapeamento resposta → módulo), constancia.service.ts
+    repositorios/           acesso a dados via Prisma
+                            ex: usuaria.repository.ts, sessao-modulo.repository.ts
     lib/
-      ia/                   camada provider-agnostic
-        cliente.ts          interface única: ia.completar(prompt, opcoes)
-        provedores/         groq.ts, together.ts (implementam interface comum)
-        prompts/            prompts curados/validados pelo Brenno, versionados
-        guardrails/         classificador-risco (local), filtro-saida, anonimizador
-        cache.ts            cache de respostas similares
-      clinico/              escalas (gad7, phq9, rosenberg, ecr-r), scoring, interpretação
-      seguranca/            detecção de risco + escalation CVV
+      clinico/              mapeamento quiz → módulo, definições dos 5 módulos
+      seguranca/            números de emergência (188 CVV, 180 mulher), constantes de risco
       db.ts                 prisma client singleton
       autenticacao.ts       auth.js config
       utils.ts              cn helper do shadcn + utilitários puros
+      haptics.ts            wrapper de Vibration API com respeito a prefers-reduced-motion
     tipos/                  interfaces e types compartilhados
-    hooks/                  usar-checkin.ts, usar-usuario-atual.ts
-    constantes/             temas.ts, regioes-mapa.ts, mensagens-acolhimento.ts
+    hooks/
+      usar-usuaria.ts
+      usar-modulo-atual.ts
+      usar-haptic.ts
+      usar-respiracao.ts    lógica do Balão da Calma (4-2-4)
+    constantes/
+      modulos.ts            definição dos 5 módulos (slug, cor, título)
+      cores.ts              hex da paleta (fonte única da verdade)
+      emergencia.ts         188 CVV, 180 Central da Mulher
+      copy.ts               textos de acolhimento (autoria Rejane)
   prisma/
     schema.prisma
     migrations/
-    seed.ts                 conteúdo inicial dos 8 temas
-  conteudo/
-    trilhas/                MDX/JSON dos exercícios de cada tema (autoria Brenno)
+    seed.ts                 seed inicial (nenhum conteúdo clínico — só estrutura)
+  conteudo/                 conteúdo autoral (não código)
+    roteiros/               roteiro dos áudios em texto (fallback + autoria Rejane)
+      modulo-1-leveza-e-paz.md
+      modulo-2-cura-do-coracao.md
+      ...
+    audios/                 mp3 gravados pela Rejane (a chegar)
+  contexto/                 briefings da Rejane (docx originais) — não editar
   public/
-    audio/                  áudios de respiração e exercícios guiados
+    audio/                  cópia dos mp3 servida via CDN (quando gravados)
 ```
 
-**Camadas e dependências** (sentido único, evita acoplamento):
+### Camadas e dependências (sentido único)
 
 ```
 app/ (rotas)  →  servicos/  →  repositorios/  →  lib/db.ts (Prisma)
                       ↓
-                   lib/ia/, lib/clinico/, lib/seguranca/
+                   lib/clinico/, lib/seguranca/, constantes/copy.ts
 ```
 
 - **Componentes** consomem dados via **server actions** ou **route handlers**, que chamam **servicos**, nunca repositórios diretamente.
-- **Repositórios** são a única camada que toca Prisma. Trocar Prisma um dia mexe só ali.
-- **Lib** (ia, clinico, seguranca) é reutilizável e não conhece banco — recebe dados, retorna dados.
+- **Repositórios** são a única camada que toca Prisma.
+- **`lib/` e `constantes/copy.ts`** são puros — recebem dados, retornam dados. Não conhecem banco.
+- **`conteudo/roteiros/`** é a fonte da verdade de texto clínico. Componentes leem daí (ou de `constantes/copy.ts`, que importa daí).
+
+---
+
+## Áudios de indução hipnótica — comportamento no MVP
+
+Enquanto Rejane não gravou os áudios, o player renderiza um estado de espera clara:
+
+- **Botão de play visível** com label "Áudio em produção — leia o roteiro abaixo enquanto isso"
+- **Roteiro completo em texto** exibido logo abaixo (importado de `conteudo/roteiros/modulo-N.md`)
+- **Sem TTS** (voz sintética soa artificial em contexto sensível — pior do que texto)
+- **Quando o mp3 chegar**: apenas dropar em `conteudo/audios/` e `public/audio/`, o player detecta e ativa. Zero mudança de código no componente.
 
 ---
 
@@ -232,7 +325,7 @@ Antes de escrever código, faça:
 1. Analise a estrutura atual do projeto.
 2. Identifique arquivos, serviços, componentes e padrões já existentes.
 3. Verifique se já existe código reutilizável.
-4. Em features clínicas (escalas, triagem, conteúdo de trilha, prompts de IA), **confirme com o Brenno antes de codar**.
+4. Em features clínicas (copy, roteiro, âncora, exercício), **confirme com a Rejane via Brenno antes de codar**.
 5. Explique brevemente o plano de implementação.
 6. Só então implemente.
 
@@ -244,8 +337,8 @@ Ao finalizar, entregue:
 
 1. **Resumo** do que foi alterado.
 2. **Lista dos arquivos** modificados.
-3. **Como testar** (passos no navegador, comandos, dados de seed).
-4. **Possíveis riscos** ou pontos de atenção (clínicos, segurança, performance).
+3. **Como testar** (passos no navegador em modo mobile, comandos, dados de seed).
+4. **Possíveis riscos** ou pontos de atenção (clínicos, segurança, performance, acessibilidade mobile).
 5. **Próximo passo recomendado**.
 
 ---
@@ -273,9 +366,9 @@ Se for necessário rodar testes automatizados para validar, **apenas execute `ru
 
 Foco mínimo de testes no MVP:
 
-- **Críticos (testar sempre)**: detecção de risco suicida, scoring de escalas clínicas, webhooks Stripe (idempotência), criptografia de dados sensíveis.
-- **Importantes**: fluxo de check-in, recomendação de trilha, gateway de Premium.
-- **Opcionais no MVP**: UI puramente visual (cobertura via uso real).
+- **Críticos (testar sempre)**: mapeamento quiz → módulo (nunca cair no módulo errado), visibilidade do botão CVV nos Módulos 3 e 4, número 188 (nunca 181), acessibilidade mobile (touch target, contraste).
+- **Importantes**: fluxo completo quiz → módulo → encerramento, contador de constância, fallback textual dos áudios.
+- **Opcionais no MVP**: animações puramente visuais.
 
 ---
 
@@ -292,6 +385,7 @@ Todo código deve ser:
 - Compatível com a arquitetura existente
 - Pronto para produção quando possível
 - **Resiliente a falhas de rede e cargas concorrentes**
+- **Acessível em mobile com uma mão** (thumb zone, touch targets, sem depender de hover)
 
 ---
 
@@ -301,4 +395,4 @@ Não aja como um gerador de código rápido.
 
 Aja como um **engenheiro responsável pelo projeto**, que pensa antes de alterar, evita bagunça, protege a arquitetura e ajuda o projeto a crescer com qualidade.
 
-E lembre-se: aqui você não está só construindo software. Está construindo uma ferramenta que vai estar com pessoas no pior dia delas — às vezes às 3h da manhã, em crise. Cada decisão técnica tem peso clínico. Code accordingly.
+E lembre-se: aqui você não está só construindo software. Está construindo uma ferramenta que vai estar com mulheres no pior dia delas — às vezes às 3h da manhã, em crise, com o celular na mão trêmula, sem ninguém pra ligar. Cada decisão técnica tem peso clínico. Cada pixel importa. Cada botão precisa estar onde o polegar dela alcança. Code accordingly.

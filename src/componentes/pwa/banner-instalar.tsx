@@ -16,7 +16,6 @@ export function BannerInstalar() {
 
   useEffect(() => {
     const dispensadoEm = localStorage.getItem(CHAVE_DISPENSADO);
-    // Dispensa válida por 7 dias
     if (dispensadoEm) {
       const diasDesdeDispensa =
         (Date.now() - Number(dispensadoEm)) / (1000 * 60 * 60 * 24);
@@ -56,22 +55,20 @@ export function BannerInstalar() {
       role="dialog"
       aria-label="Instalar GPS Emocional"
       className="fixed inset-x-0 z-40 px-4"
-      style={{
-        bottom: "max(5rem, env(safe-area-inset-bottom))",
-      }}
+      style={{ bottom: "max(5rem, env(safe-area-inset-bottom))" }}
     >
-      <div className="max-w-md mx-auto bg-white border border-oceano-200 shadow-xl rounded-2xl p-4 flex items-start gap-3 animate-em-aparicao">
+      <div className="max-w-md mx-auto bg-noite-400 border border-lavanda/30 shadow-xl rounded-2xl p-4 flex items-start gap-3 animate-aparecer">
         <span
-          className="w-10 h-10 rounded-xl bg-brisa-100 flex items-center justify-center text-xl shrink-0"
+          className="w-10 h-10 rounded-xl bg-rosa-flor/20 flex items-center justify-center text-xl shrink-0"
           aria-hidden="true"
         >
           🧭
         </span>
         <div className="flex-1 min-w-0 space-y-1">
-          <p className="text-sm font-medium text-oceano-800">
-            Instala o GPS Emocional?
+          <p className="text-sm font-medium text-bruma">
+            Instalar o GPS Emocional?
           </p>
-          <p className="text-xs text-oceano-600 leading-relaxed">
+          <p className="text-xs text-bruma-muted leading-relaxed">
             Vira atalho na tela inicial. Funciona como app, sem loja.
           </p>
         </div>
@@ -79,14 +76,14 @@ export function BannerInstalar() {
           <button
             type="button"
             onClick={instalar}
-            className="min-h-[40px] px-4 rounded-full bg-brisa-500 text-white text-sm font-medium hover:bg-brisa-600 active:scale-95 transition-transform"
+            className="min-h-[40px] px-4 rounded-full bg-rosa-flor text-noite text-sm font-semibold hover:bg-rosa-flor-500 active:scale-95 transition-transform"
           >
             Instalar
           </button>
           <button
             type="button"
             onClick={dispensar}
-            className="min-h-[36px] text-xs text-oceano-500 hover:text-oceano-700"
+            className="min-h-[36px] text-xs text-bruma-muted hover:text-bruma"
           >
             Agora não
           </button>

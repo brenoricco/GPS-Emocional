@@ -11,25 +11,24 @@ export const metadata: Metadata = {
     template: "%s · GPS Emocional",
   },
   description:
-    "Um GPS pra suas emoções. Localize onde você está, descubra pra onde quer ir, e siga uma rota cuidada — desenvolvida por psicólogo.",
+    "Um espaço seguro para respirar, se acolher e recalcular a rota. Técnicas de hipnoterapia guiadas por psicólogas para mulheres em momentos difíceis.",
   applicationName: "GPS Emocional",
   authors: [{ name: "Brenno Ricco" }],
   keywords: [
     "saúde mental",
     "ansiedade",
     "autoestima",
-    "luto",
+    "hipnoterapia",
+    "acolhimento",
     "relacionamento tóxico",
-    "traição",
-    "timidez",
-    "TCC",
-    "ACT",
+    "depressão",
+    "mulheres",
   ],
   robots: { index: true, follow: true },
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "GPS Emocional",
   },
   icons: {
@@ -45,7 +44,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#F4F8FA",
+  themeColor: "#0B132B",
+  viewportFit: "cover",
 };
 
 export default function LayoutRaiz({
@@ -54,8 +54,8 @@ export default function LayoutRaiz({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
-      <body>
+    <html lang="pt-BR" className="dark" suppressHydrationWarning>
+      <body className="bg-noite text-bruma">
         {children}
         <RegistradorServiceWorker />
         <BannerInstalar />

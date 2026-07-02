@@ -3,88 +3,74 @@
 @tailwind utilities;
 
 :root {
-  --fonte-base: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fonte-base: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --cor-fundo: #0b132b;
+  --cor-texto: #f4f6f9;
+  color-scheme: dark;
 }
 
 html,
 body {
   height: 100%;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
 }
 
 body {
-  @apply bg-fundo-claro text-oceano-800 antialiased;
+  @apply antialiased;
   font-family: var(--fonte-base);
   text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  /* previne zoom acidental em toques duplos no iOS */
+  touch-action: manipulation;
 }
 
-/* Foco visível e respeitoso pra acessibilidade */
+/* Inputs no iOS Safari só evitam zoom se font-size >= 16px */
+input,
+textarea,
+select {
+  font-size: 16px;
+}
+
+/* Foco visível — respeita acessibilidade sem quebrar identidade */
 :focus-visible {
-  outline: 2px solid theme("colors.brisa.400");
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 2px solid theme("colors.rosa-flor.DEFAULT");
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
-/* Ondas ambiente na landing — movimento horizontal lento, infinito */
-@keyframes ondular-horizontal {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+/* Utilitário para safe-area em CTAs fixos no rodapé */
+.rodape-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1rem);
 }
 
-.animate-ondular-horizontal-lento {
-  animation: ondular-horizontal 28s linear infinite;
-}
-.animate-ondular-horizontal-medio {
-  animation: ondular-horizontal 20s linear infinite;
-}
-.animate-ondular-horizontal-rapido {
-  animation: ondular-horizontal 14s linear infinite;
+/* Container central mobile-first — todos os steps da jornada usam */
+.jornada-container {
+  @apply relative min-h-screen w-full max-w-md mx-auto px-5 flex flex-col;
+  padding-top: calc(env(safe-area-inset-top) + 1.25rem);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 1.25rem);
 }
 
-/* Partículas flutuando pra cima na landing */
-@keyframes flutuar-cima {
-  0% {
-    transform: translateY(0);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.6;
-  }
-  85% {
-    opacity: 0.4;
-  }
-  100% {
-    transform: translateY(-110vh);
-    opacity: 0;
-  }
+/* Brilho ambiente de estrelas — usado nos fundos das telas de módulo */
+.ceu-com-estrelas {
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(244, 246, 249, 0.65) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 20%, rgba(244, 246, 249, 0.55) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 85% 60%, rgba(244, 246, 249, 0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 75%, rgba(244, 246, 249, 0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 45% 85%, rgba(244, 246, 249, 0.45) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 60% 45%, rgba(255, 224, 130, 0.4) 0%, transparent 100%);
+  background-color: transparent;
 }
 
-.animate-flutuar-cima {
-  animation-name: flutuar-cima;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
+/* Pontos de espera visual em texto — usa espaçamento não-quebrável para dar respiro */
+.espaco-respiro {
+  display: inline-block;
+  width: 0.25em;
 }
 
-/* Animação suave entre passos do acolhimento */
-@keyframes em-aparicao {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-em-aparicao {
-  animation: em-aparicao 320ms ease-out both;
-}
-
-/* Reduz animações pra usuários com sensibilidade vestibular */
+/* Contexto reduzido de animação — respeita usuárias com sensibilidade vestibular */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -92,5 +78,9 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .ceu-com-estrelas {
+    background-image: none;
   }
 }
