@@ -1,9 +1,9 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "pnpm install --frozen-lockfile=false && NEXT_OUTPUT=standalone pnpm build"
+buildCommand = "pnpm install --frozen-lockfile=false && pnpm build"
 
 [deploy]
-startCommand = "node .next/standalone/server.js"
+startCommand = "pnpm start"
 healthcheckPath = "/api/saude"
 healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
