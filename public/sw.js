@@ -10,21 +10,17 @@
  * forçado (Ctrl+Shift+R) se mudar estratégias.
  */
 
-const VERSAO = "v5";
+const VERSAO = "v6-jornada";
 const NOME_CACHE = `gps-emocional-${VERSAO}`;
 const URLS_PRE_CACHE = [
   "/",
-  "/bem-vindo",
-  "/entrar",
+  "/quiz",
+  "/encerramento",
   "/manifest.webmanifest",
   "/icone-192.png",
   "/icone-512.png",
   "/logo-simbolo.png",
-  "/audio/respiracao/vamos-comecar.mp3",
-  "/audio/respiracao/inspire.mp3",
-  "/audio/respiracao/segure.mp3",
-  "/audio/respiracao/expire.mp3",
-  "/audio/respiracao/pronto.mp3",
+  "/logo-gps-emocional.png",
 ];
 
 self.addEventListener("install", (event) => {

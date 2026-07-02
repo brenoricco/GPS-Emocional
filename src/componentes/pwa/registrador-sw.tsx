@@ -3,13 +3,33 @@
 import { useEffect } from "react";
 
 /**
- * Registra o service worker em qualquer ambiente (dev e prod).
- * Em dev, ajuda a testar o comportamento PWA real durante construção.
+ * Registra o service worker APENAS em produção.
+ *
+ * Em dev, o Fast Refresh do Next entrega chunks com hashes voláteis a cada
+ * recompile. Um SW cache-first serviria chunks obsoletos apontando para
+ * módulos que já não existem, causando "Cannot read properties of undefined
+ * (reading 'call')" no webpack factory. Se um SW já foi registrado em dev
+ * antes desta correção, desregistramos aqui.
  */
 export function RegistradorServiceWorker() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("serviceWorker" in navigator)) return;
+
+    if (process.env.NODE_ENV !== "production") {
+      // Limpa qualquer SW/cache remanescente de sessões anteriores em dev
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((regs) => regs.forEach((r) => r.unregister()))
+        .catch(() => {});
+      if (typeof caches !== "undefined") {
+        caches
+          .keys()
+          .then((chaves) => chaves.forEach((c) => caches.delete(c)))
+          .catch(() => {});
+      }
+      return;
+    }
 
     const registrar = async () => {
       try {
