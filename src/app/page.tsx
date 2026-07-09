@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { BotaoPrimarioLink } from "@/componentes/jornada/botao-primario";
 import { Logo } from "@/componentes/jornada/logo";
 import { TextoAcolhimento } from "@/componentes/jornada/texto-acolhimento";
@@ -13,7 +15,7 @@ export default function BoasVindas() {
 
       {/* Texto de acolhimento — no centro vertical, com espaço para respirar */}
       <section className="flex-1 flex flex-col justify-center text-center py-6">
-        <p className="text-2xl font-medium text-bruma mb-5">
+        <p className="text-2xl font-medium text-noite mb-5">
           {BOAS_VINDAS.saudacao}
         </p>
         <TextoAcolhimento className="text-center max-w-sm mx-auto">
@@ -22,10 +24,19 @@ export default function BoasVindas() {
       </section>
 
       {/* CTA — thumb zone, base */}
-      <div className="pt-6">
+      <div className="pt-6 space-y-3">
         <BotaoPrimarioLink href="/quiz" pulsar ariaLabel="Começar a jornada">
           {BOAS_VINDAS.cta}
         </BotaoPrimarioLink>
+
+        <Link
+          href="/desabafos"
+          aria-label="Abrir meus desabafos — diário privado"
+          className="flex w-full min-h-[52px] items-center justify-center rounded-cta bg-lavanda text-noite font-semibold text-center px-5 active:scale-[0.98] transition-transform focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-lavanda-400/40"
+        >
+          Meus desabafos
+        </Link>
+
         <p className="text-center text-xs text-bruma-muted mt-4">
           Um espaço seguro. Nenhum julgamento.
         </p>

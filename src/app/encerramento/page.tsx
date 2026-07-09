@@ -11,22 +11,22 @@ export const metadata: Metadata = {
 export default function PaginaEncerramento() {
   return (
     <main className="jornada-container ceu-com-estrelas">
-      {/* Logo protegida na moldura circular — recolhimento */}
+      {/* Símbolo — variante mais leve na despedida */}
       <header className="flex justify-center pt-4">
         <div className="relative">
-          <Logo variante="completo" tamanho={200} prioridade className="w-[50vw] max-w-[220px] h-auto" />
+          <Logo variante="simbolo" tamanho={140} prioridade className="w-[35vw] max-w-[160px] h-auto opacity-90" />
         </div>
       </header>
 
-      {/* Texto de despedida */}
-      <section className="flex-1 flex flex-col justify-center text-center py-6 space-y-5">
-        <p className="text-xl font-medium text-bruma leading-snug">
+      {/* Texto de despedida — corpo justificado (título e âncora ficam centralizados) */}
+      <section className="flex-1 flex flex-col justify-center py-6 space-y-5">
+        <p className="text-xl font-medium text-noite leading-snug text-center">
           {ENCERRAMENTO.titulo}
         </p>
-        <p className="text-acolhimento text-bruma/90 max-w-sm mx-auto">
+        <p className="text-acolhimento text-noite/85 max-w-sm mx-auto text-justify hyphens-auto">
           {ENCERRAMENTO.corpo}
         </p>
-        <p className="text-acolhimento text-bruma/85 max-w-sm mx-auto">
+        <p className="text-acolhimento text-noite/75 max-w-sm mx-auto text-justify hyphens-auto">
           {ENCERRAMENTO.lembrete}
         </p>
       </section>

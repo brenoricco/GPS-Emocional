@@ -18,7 +18,7 @@ export function TextoAcolhimento({
   return (
     <div
       className={cn(
-        "text-acolhimento text-bruma/95 animate-aparecer",
+        "text-acolhimento text-noite/90 text-justify hyphens-auto animate-aparecer",
         className,
       )}
     >
@@ -26,7 +26,7 @@ export function TextoAcolhimento({
         <span key={i}>
           {parte}
           {i < partes.length - 1 && (
-            <span aria-hidden="true" className="text-lavanda tracking-[0.5em]">
+            <span aria-hidden="true" className="text-mauve tracking-[0.5em]">
               {" . . . "}
             </span>
           )}

@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import { BotaoSentimento } from "@/componentes/quiz/botao-sentimento";
-import { Logo } from "@/componentes/jornada/logo";
 import { MODULOS } from "@/constantes/modulos";
 import { QUIZ } from "@/constantes/copy";
 
@@ -13,7 +12,7 @@ export const metadata: Metadata = {
 export default function PaginaQuiz() {
   return (
     <main className="jornada-container">
-      {/* Cabeçalho — logo pequeno + link discreto de voltar */}
+      {/* Cabeçalho — apenas link discreto de voltar (sem logo, decisão Rejane) */}
       <header className="flex items-center justify-between mb-3">
         <Link
           href="/"
@@ -24,7 +23,7 @@ export default function PaginaQuiz() {
             <path d="M15 6l-6 6 6 6" />
           </svg>
         </Link>
-        <Logo variante="simbolo" tamanho={40} className="opacity-80" />
+        <div className="min-h-touch min-w-touch" aria-hidden="true" />
         <div className="min-h-touch min-w-touch" aria-hidden="true" />
       </header>
 
@@ -33,7 +32,7 @@ export default function PaginaQuiz() {
         <p className="text-[11px] uppercase tracking-[0.24em] text-lavanda mb-2">
           {QUIZ.cabecalho}
         </p>
-        <h1 className="text-2xl font-medium text-bruma leading-snug">
+        <h1 className="text-2xl font-medium text-noite leading-snug">
           {QUIZ.pergunta}
         </h1>
         <p className="text-sm text-bruma-muted mt-2">{QUIZ.instrucao}</p>

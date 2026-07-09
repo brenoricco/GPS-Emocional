@@ -13,18 +13,18 @@ export function CabecalhoModulo({ slug }: { slug: ModuloSlug }) {
       <Link
         href={"/quiz" as Route}
         aria-label="Voltar ao quiz"
-        className="min-h-touch min-w-touch inline-flex items-center justify-center -ml-2 text-bruma-muted hover:text-bruma transition-colors"
+        className="min-h-touch min-w-touch inline-flex items-center justify-center -ml-2 text-bruma-muted hover:text-noite transition-colors"
       >
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M15 6l-6 6 6 6" />
         </svg>
       </Link>
 
-      <div className="flex-1 text-center min-w-0">
+      <div className="flex-1 text-center min-w-0 px-1">
         <p className="text-[11px] uppercase tracking-[0.18em] text-bruma-muted">
           Módulo {modulo.numero}
         </p>
-        <h1 className={cn("text-base font-medium truncate text-bruma")}>
+        <h1 className={cn("text-base font-medium text-noite leading-tight break-words")}>
           {modulo.titulo}
         </h1>
       </div>

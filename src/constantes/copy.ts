@@ -95,7 +95,11 @@ export const COPY_POR_MODULO: Record<ModuloSlug, CopyModulo> = {
   },
 };
 
-/** Roteiros dos áudios de indução hipnótica (fallback textual enquanto Rejane não gravou). */
+/**
+ * Roteiros dos áudios de indução hipnótica.
+ * NÃO exibidos na UI (decisão Rejane 2026-07 — agora que os áudios estão gravados).
+ * Mantidos aqui como referência autoral para futura consulta/revisão clínica.
+ */
 export const ROTEIRO_HIPNOSE: Record<ModuloSlug, string> = {
   "leveza-e-paz": `Feche os olhos, se quiser, e continue respirando neste ritmo que você acabou de encontrar. Sinta cada expiração desfazendo um nó de tensão nos seus ombros, no seu peito, na sua mandíbula. O silêncio que existe entre uma respiração e outra é o seu lugar mais seguro. É ali que mora a sua paz. Volte pra ele sempre que precisar.`,
   "cura-do-coracao": `Quando alguém quebra a nossa confiança, parece que a nossa estrutura desaba. Mas feche os olhos por um instante e perceba: as paredes ao seu redor podem ter balançado, mas os alicerces de quem você é continuam intactos. Imagine-se agora reconstruindo um espaço sagrado dentro do seu peito. Cada tijolo de confiança que você coloca de volta, você não está colocando no outro — você está colocando em si mesma. Você volta a confiar na sua intuição, na sua capacidade de se proteger e de dar a volta por cima.`,

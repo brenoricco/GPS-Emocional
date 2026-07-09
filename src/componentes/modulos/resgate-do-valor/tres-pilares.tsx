@@ -61,8 +61,8 @@ export function TresPilares({ aoConcluir }: { aoConcluir: () => void }) {
               className={cn(
                 "rounded-2xl border transition-all",
                 ativo
-                  ? "border-dourado/60 bg-dourado/10 shadow-[0_0_30px_rgba(212,175,55,0.15)]"
-                  : "border-rosa-flor/30 bg-noite-400/25",
+                  ? "border-dourado/60 bg-dourado/20 shadow-[0_0_30px_rgba(201,164,106,0.25)]"
+                  : "border-mauve/30 bg-creme-medio/60",
               )}
             >
               <button
@@ -81,7 +81,7 @@ export function TresPilares({ aoConcluir }: { aoConcluir: () => void }) {
                   <span
                     className={cn(
                       "block text-base font-medium",
-                      ativo ? "text-dourado" : "text-bruma",
+                      ativo ? "text-dourado-700" : "text-noite",
                     )}
                   >
                     {pilar.titulo}
@@ -90,7 +90,7 @@ export function TresPilares({ aoConcluir }: { aoConcluir: () => void }) {
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "text-bruma-muted transition-transform",
+                    "text-noite/55 transition-transform",
                     ativo && "rotate-90",
                   )}
                 >
@@ -100,7 +100,7 @@ export function TresPilares({ aoConcluir }: { aoConcluir: () => void }) {
 
               {ativo && (
                 <div className="px-4 pb-4 animate-aparecer">
-                  <p className="text-acolhimento text-bruma/95 border-t border-dourado/20 pt-3">
+                  <p className="text-acolhimento text-noite/85 border-t border-dourado/30 pt-3">
                     {pilar.reflexao}
                   </p>
                 </div>

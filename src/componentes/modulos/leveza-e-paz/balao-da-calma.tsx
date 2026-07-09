@@ -62,30 +62,36 @@ export function BalaoDaCalma({ aoConcluir }: { aoConcluir: () => void }) {
     [],
   );
 
+  function expirar(deProgresso: number) {
+    limparTimers();
+    vibrar("respiracao");
+    setFase("expirando");
+    animarProgresso(deProgresso, 0, EXPIRA_MS * deProgresso, () => {
+      setFase("descansando");
+      setProgresso(0);
+      setCiclos((c) => c + 1);
+    });
+  }
+
   function iniciarInspiracao() {
+    if (jaConcluido.current) return;
     if (fase !== "descansando" && fase !== "expirando") return;
     limparTimers();
     vibrar("respiracao");
     setFase("inspirando");
     animarProgresso(progresso, 1, INSPIRA_MS * (1 - progresso), () => {
       setFase("segurando");
+      // Auto-libera após SEGURA_MS mesmo se a usuária ainda estiver segurando
+      // (garante ritmo 4-2-4 e que a bola sempre volte ao fim do ciclo).
       timerRef.current = window.setTimeout(() => {
-        // Se a usuária soltar durante o "segurando", já vai pra expirando naturalmente
-        // Se ela continuar segurando, o sistema aguarda ela soltar
+        expirar(1);
       }, SEGURA_MS);
     });
   }
 
   function iniciarExpiracao() {
     if (fase === "descansando") return;
-    limparTimers();
-    vibrar("respiracao");
-    setFase("expirando");
-    animarProgresso(progresso, 0, EXPIRA_MS * progresso, () => {
-      setFase("descansando");
-      setProgresso(0);
-      setCiclos((c) => c + 1);
-    });
+    expirar(progresso);
   }
 
   const escala = 0.55 + progresso * 0.55; // 0.55 → 1.10
@@ -104,10 +110,10 @@ export function BalaoDaCalma({ aoConcluir }: { aoConcluir: () => void }) {
         aria-live="polite"
         className={cn(
           "text-lg font-medium tracking-wide transition-colors",
-          fase === "inspirando" && "text-rosa-flor",
-          fase === "segurando" && "text-lavanda",
-          fase === "expirando" && "text-azul-ceu",
-          fase === "descansando" && "text-bruma-muted",
+          fase === "inspirando" && "text-rosa-flor-500",
+          fase === "segurando" && "text-violeta",
+          fase === "expirando" && "text-azul-ceu-600",
+          fase === "descansando" && "text-noite/55",
         )}
       >
         {texto}
@@ -145,11 +151,11 @@ export function BalaoDaCalma({ aoConcluir }: { aoConcluir: () => void }) {
         <span
           aria-hidden="true"
           style={{ transform: `scale(${escala * 0.85})` }}
-          className="absolute inset-0 rounded-full bg-noite/40 transition-transform duration-100"
+          className="absolute inset-0 rounded-full bg-bruma/70 transition-transform duration-100"
         />
         <span
           aria-hidden="true"
-          className="absolute inset-0 flex items-center justify-center text-bruma/90 text-sm"
+          className="absolute inset-0 flex items-center justify-center text-noite/70 text-sm"
         >
           {fase === "descansando" ? "🌸" : ""}
         </span>
@@ -162,7 +168,7 @@ export function BalaoDaCalma({ aoConcluir }: { aoConcluir: () => void }) {
             key={i}
             className={cn(
               "w-3 h-3 rounded-full transition-colors",
-              i < ciclos ? "bg-rosa-flor" : "bg-noite-300",
+              i < ciclos ? "bg-rosa-flor" : "bg-noite-100",
             )}
           />
         ))}

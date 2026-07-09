@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "GPS Emocional",
   },
   icons: {
@@ -44,7 +44,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#0B132B",
+  themeColor: "#FBF2EE",
   viewportFit: "cover",
 };
 
@@ -54,8 +54,8 @@ export default function LayoutRaiz({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="dark" suppressHydrationWarning>
-      <body className="bg-noite text-bruma">
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className="bg-bruma text-noite">
         {children}
         <RegistradorServiceWorker />
         <BannerInstalar />

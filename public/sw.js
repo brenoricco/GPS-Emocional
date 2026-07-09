@@ -10,11 +10,12 @@
  * forçado (Ctrl+Shift+R) se mudar estratégias.
  */
 
-const VERSAO = "v6-jornada";
+const VERSAO = "v7-audios-e-desabafos";
 const NOME_CACHE = `gps-emocional-${VERSAO}`;
 const URLS_PRE_CACHE = [
   "/",
   "/quiz",
+  "/desabafos",
   "/encerramento",
   "/manifest.webmanifest",
   "/icone-192.png",

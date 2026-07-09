@@ -16,7 +16,8 @@ import { ReconstrucaoPilares } from "@/componentes/modulos/cura-do-coracao/recon
 import { CortarFios } from "@/componentes/modulos/rompendo-ciclos/cortar-fios";
 import { DespertarCores } from "@/componentes/modulos/resgatando-cores/despertar-cores";
 import { TresPilares } from "@/componentes/modulos/resgate-do-valor/tres-pilares";
-import { COPY_POR_MODULO, ROTEIRO_HIPNOSE } from "@/constantes/copy";
+import { COPY_POR_MODULO } from "@/constantes/copy";
+import { AUDIO_HIPNOSE } from "@/constantes/audios";
 import { MODULOS_POR_SLUG, ehModuloAltoRisco } from "@/constantes/modulos";
 import type { ModuloSlug } from "@/tipos/modulo";
 
@@ -31,7 +32,7 @@ export function VivenciaModulo({ slug }: { slug: ModuloSlug }) {
   const router = useRouter();
   const modulo = MODULOS_POR_SLUG[slug];
   const copy = COPY_POR_MODULO[slug];
-  const roteiro = ROTEIRO_HIPNOSE[slug];
+  const audioUrl = AUDIO_HIPNOSE[slug];
   const [exercicioConcluido, setExercicioConcluido] = useState(false);
   const refConclusao = useRef<HTMLDivElement | null>(null);
 
@@ -89,8 +90,8 @@ export function VivenciaModulo({ slug }: { slug: ModuloSlug }) {
             <div ref={refConclusao} className="space-y-6">
               <MensagemPosExercicio mensagem={copy.mensagemPosExercicio} />
 
-              {/* 3. Áudio de indução hipnótica (com roteiro em fallback) */}
-              <PlayerHipnose audioUrl={null} roteiro={roteiro} />
+              {/* 3. Áudio de indução hipnótica */}
+              <PlayerHipnose audioUrl={audioUrl} />
 
               {/* Bloco CVV — bloco fixo em M3 (rel. abusivo), flutuante em M4 (depressão) */}
               {M3 && (

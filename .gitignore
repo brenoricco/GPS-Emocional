@@ -41,3 +41,6 @@ prisma/dev.db-journal
 next-env.d.ts
 .vercel
 .turbo
+
+# Área de trabalho — briefings da Rejane, áudios brutos, mocks
+temp/

@@ -38,7 +38,7 @@ export function BotaoCvv({ variante = "bloco", incluirCentralMulher = false, cla
       <div
         className={cn(
           "fixed bottom-0 inset-x-0 z-40 px-4 pt-2 rodape-safe",
-          "bg-gradient-to-t from-noite via-noite/95 to-noite/0",
+          "bg-gradient-to-t from-bruma via-bruma/95 to-bruma/0",
           className,
         )}
       >
@@ -67,7 +67,7 @@ export function BotaoCvv({ variante = "bloco", incluirCentralMulher = false, cla
         className,
       )}
     >
-      <p className="text-sm text-bruma leading-relaxed">
+      <p className="text-sm text-noite leading-relaxed">
         <span aria-hidden="true">🖤</span> Você não precisa passar por isso sozinha.
         Se a dor parecer insuportável, ligue agora — o atendimento é gratuito,
         sigiloso e 24 horas.
@@ -85,7 +85,7 @@ export function BotaoCvv({ variante = "bloco", incluirCentralMulher = false, cla
         <span aria-hidden="true">📞</span>
         {CVV.labelBotao}
       </a>
-      <p className="text-xs text-bruma-muted text-center">{CVV.descricao}</p>
+      <p className="text-xs text-noite/60 text-center">{CVV.descricao}</p>
 
       {incluirCentralMulher && (
         <>
@@ -102,9 +102,7 @@ export function BotaoCvv({ variante = "bloco", incluirCentralMulher = false, cla
             <span aria-hidden="true">📞</span>
             {CENTRAL_MULHER.labelBotao}
           </a>
-          <p className="text-xs text-bruma-muted text-center">
-            {CENTRAL_MULHER.descricao}
-          </p>
+          <p className="text-xs text-noite/60 text-center">{CENTRAL_MULHER.descricao}</p>
         </>
       )}
     </section>

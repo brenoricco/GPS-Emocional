@@ -6,11 +6,11 @@ import { vibrar } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 const FRASES = [
-  "A culpa de tudo é sempre minha.",
-  "Ele é ciumento porque me ama.",
-  "Você não faz nada direito.",
-  "Se você me deixar, ninguém mais vai te querer.",
-  "Você está louca, eu nunca disse isso.",
+  "A CULPA DE TUDO É SEMPRE MINHA",
+  "EU NÃO FAÇO NADA DIREITO",
+  "SE ELE ME DEIXAR VOU ACABAR SOZINHA",
+  "ELE ME AMA, POR ISSO É TÃO CIUMENTO",
+  "NÃO SOU BONITA O BASTANTE PARA ELE",
 ] as const;
 
 /**
@@ -56,8 +56,8 @@ export function CortarFios({ aoConcluir }: { aoConcluir: () => void }) {
                   "relative w-full text-left rounded-2xl border px-4 py-4",
                   "flex items-center gap-3 transition-all duration-500",
                   solta
-                    ? "border-rosa-flor/20 bg-rosa-flor/5 opacity-30 blur-[1px]"
-                    : "border-emergencia/40 bg-emergencia/10 active:scale-[0.98]",
+                    ? "border-mauve/30 bg-blush/20 opacity-30 blur-[1px]"
+                    : "border-laranja-claro bg-laranja-claro active:scale-[0.98]",
                 )}
               >
                 <span aria-hidden="true" className="text-xl shrink-0">
@@ -65,8 +65,8 @@ export function CortarFios({ aoConcluir }: { aoConcluir: () => void }) {
                 </span>
                 <span
                   className={cn(
-                    "text-[15px] leading-snug",
-                    solta ? "text-bruma-muted line-through" : "text-bruma",
+                    "text-[15px] leading-snug font-medium",
+                    solta ? "text-noite/40 line-through" : "text-noite",
                   )}
                 >
                   {frase}

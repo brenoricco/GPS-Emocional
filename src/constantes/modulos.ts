@@ -12,7 +12,7 @@ export const MODULOS: readonly Modulo[] = [
     frase:
       "Estou muito irritada, cansada, ansiosa, indecisa, com medo de tudo, quero ficar sozinha.",
     corBotao: "orquidea",
-    classeFundo: "bg-orquidea hover:bg-orquidea-600 active:bg-orquidea-700",
+    classeFundo: "bg-lavanda-claro hover:bg-lavanda-claro/90 active:bg-lavanda-claro/80",
     classeTexto: "text-noite",
     descricaoExercicio: "Balão da Calma — respiração guiada por toque",
   },
@@ -23,7 +23,7 @@ export const MODULOS: readonly Modulo[] = [
     frase:
       "Me sinto impotente, carente, um objeto descartável e tenho medo de ficar sozinha. Não sei dizer não e me preocupo muito com a opinião dos outros.",
     corBotao: "laranja",
-    classeFundo: "bg-atencao hover:bg-atencao-600 active:bg-atencao-700",
+    classeFundo: "bg-laranja-claro hover:bg-laranja-claro/90 active:bg-laranja-claro/80",
     classeTexto: "text-noite",
     descricaoExercicio: "Reconstruir os pilares do seu valor",
   },
@@ -34,8 +34,8 @@ export const MODULOS: readonly Modulo[] = [
     frase:
       "No relacionamento me sinto ameaçada, impotente, incapaz e sem esperança. Não posso falar, tenho medo da reação dele.",
     corBotao: "vermelho-suave",
-    classeFundo: "bg-emergencia hover:bg-emergencia-600 active:bg-emergencia-700",
-    classeTexto: "text-bruma",
+    classeFundo: "bg-verde-claro hover:bg-verde-claro/90 active:bg-verde-claro/80",
+    classeTexto: "text-noite",
     descricaoExercicio: "Cortar os fios das frases que te machucam",
   },
   {
@@ -45,8 +45,8 @@ export const MODULOS: readonly Modulo[] = [
     frase:
       "Sinto um vazio profundo, tenho crises de choro, quero ficar sozinha, não tenho vontade de viver.",
     corBotao: "azul-ceu",
-    classeFundo: "bg-azul-ceu hover:bg-azul-ceu-600 active:bg-azul-ceu-700",
-    classeTexto: "text-bruma",
+    classeFundo: "bg-azul-claro hover:bg-azul-claro/90 active:bg-azul-claro/80",
+    classeTexto: "text-noite",
     descricaoExercicio: "Acender uma pequena luz — um micro-passo por vez",
   },
   {
@@ -56,7 +56,7 @@ export const MODULOS: readonly Modulo[] = [
     frase:
       "Sinto que não sou capaz, não mereço coisas boas, me sinto um fracasso.",
     corBotao: "amarelo-sol",
-    classeFundo: "bg-amarelo-sol hover:bg-amarelo-sol-600 active:bg-amarelo-sol-700",
+    classeFundo: "bg-amarelo-claro hover:bg-amarelo-claro/90 active:bg-amarelo-claro/80",
     classeTexto: "text-noite",
     descricaoExercicio: "Resgatar seus 3 pilares — Capacidade, Merecimento, Recomeço",
   },

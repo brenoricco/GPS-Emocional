@@ -17,8 +17,8 @@ export function MensagemPosExercicio({
       role="status"
       aria-live="polite"
       className={cn(
-        "rounded-2xl border border-rosa-flor/30 bg-rosa-flor/5 px-5 py-5",
-        "text-acolhimento text-bruma animate-aparecer",
+        "rounded-2xl border border-rosa-flor/40 bg-blush/40 px-5 py-5",
+        "text-acolhimento text-noite text-justify hyphens-auto animate-aparecer",
         className,
       )}
     >

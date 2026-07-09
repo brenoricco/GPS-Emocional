@@ -6,22 +6,17 @@ import { vibrar } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  /** URL do MP3. Se undefined/null, renderiza estado "em produção" + roteiro. */
-  audioUrl?: string | null;
-  /** Roteiro em texto — sempre exibido como fallback e apoio. */
-  roteiro: string;
+  audioUrl: string;
   titulo?: string;
 };
 
 /**
- * Player de indução hipnótica.
- * Estado 1 (sem áudio): botão "Áudio em produção" desabilitado + roteiro em destaque.
- * Estado 2 (com áudio): controle real de play/pause + roteiro colapsável.
+ * Player de indução hipnótica. Roteiro em texto foi ocultado a pedido da Rejane
+ * agora que os áudios estão gravados — a usuária deve apenas ouvir.
  */
-export function PlayerHipnose({ audioUrl, roteiro, titulo = "Indução hipnótica guiada" }: Props) {
+export function PlayerHipnose({ audioUrl, titulo = "Indução hipnótica guiada" }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [tocando, setTocando] = useState(false);
-  const [expandido, setExpandido] = useState(!audioUrl);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -46,21 +41,18 @@ export function PlayerHipnose({ audioUrl, roteiro, titulo = "Indução hipnótic
   return (
     <section
       aria-label={titulo}
-      className="rounded-2xl border border-lavanda/25 bg-noite-400/20 p-4 space-y-3"
+      className="rounded-2xl border border-mauve/30 bg-creme-medio/60 p-4"
     >
       <div className="flex items-center gap-3">
         <button
           type="button"
-          disabled={!audioUrl}
           onClick={alternarPlay}
           aria-label={tocando ? "Pausar áudio" : "Tocar áudio"}
           className={cn(
             "shrink-0 flex items-center justify-center rounded-full",
             "w-14 h-14 min-w-touch min-h-touch",
-            audioUrl
-              ? "bg-lavanda text-noite hover:bg-lavanda-600 active:scale-95"
-              : "bg-noite-300/40 text-bruma-muted cursor-not-allowed",
-            "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-lavanda-400/40 transition-transform",
+            "bg-violeta text-bruma hover:bg-violeta-600 active:scale-95",
+            "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violeta-400/40 transition-transform",
           )}
         >
           {tocando ? (
@@ -76,37 +68,14 @@ export function PlayerHipnose({ audioUrl, roteiro, titulo = "Indução hipnótic
         </button>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-bruma">{titulo}</p>
-          {audioUrl ? (
-            <p className="text-xs text-bruma-muted">Toque para começar a escutar</p>
-          ) : (
-            <p className="text-xs text-amarelo-sol">
-              Áudio em produção — leia o roteiro abaixo
-            </p>
-          )}
+          <p className="text-sm font-medium text-noite">{titulo}</p>
+          <p className="text-xs text-bruma-muted">
+            {tocando ? "Feche os olhos e ouça no seu ritmo" : "Toque para começar a escutar"}
+          </p>
         </div>
       </div>
 
-      {audioUrl && (
-        <audio ref={audioRef} src={audioUrl} preload="metadata" playsInline />
-      )}
-
-      <div>
-        <button
-          type="button"
-          onClick={() => setExpandido((v) => !v)}
-          className="text-xs text-bruma-muted underline underline-offset-4 min-h-touch inline-flex items-center"
-          aria-expanded={expandido}
-        >
-          {expandido ? "Ocultar roteiro" : "Ler roteiro"}
-        </button>
-
-        {expandido && (
-          <div className="mt-3 text-acolhimento text-bruma/90 whitespace-pre-line">
-            {roteiro}
-          </div>
-        )}
-      </div>
+      <audio ref={audioRef} src={audioUrl} preload="metadata" playsInline />
     </section>
   );
 }
