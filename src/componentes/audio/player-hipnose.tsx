@@ -8,23 +8,29 @@ import { cn } from "@/lib/utils";
 type Props = {
   audioUrl: string;
   titulo?: string;
+  /** Callback disparado quando o áudio termina naturalmente.
+   *  Usado no M3 para auto-avançar para a fase da âncora (pedido Rejane). */
+  aoFinalizar?: () => void;
 };
 
 /**
  * Player de indução hipnótica. Roteiro em texto foi ocultado a pedido da Rejane
  * agora que os áudios estão gravados — a usuária deve apenas ouvir.
  */
-export function PlayerHipnose({ audioUrl, titulo = "Indução hipnótica guiada" }: Props) {
+export function PlayerHipnose({ audioUrl, titulo = "Indução hipnótica guiada", aoFinalizar }: Props) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [tocando, setTocando] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    const onFim = () => setTocando(false);
+    const onFim = () => {
+      setTocando(false);
+      aoFinalizar?.();
+    };
     audio.addEventListener("ended", onFim);
     return () => audio.removeEventListener("ended", onFim);
-  }, [audioUrl]);
+  }, [audioUrl, aoFinalizar]);
 
   function alternarPlay() {
     const audio = audioRef.current;

@@ -42,7 +42,7 @@ export function CortarFios({ aoConcluir }: { aoConcluir: () => void }) {
           : "Mochila mais leve"}
       </p>
 
-      <ul className="space-y-3">
+      <ul className="space-y-2">
         {FRASES.map((frase, i) => {
           const solta = soltas.has(i);
           return (
@@ -53,19 +53,19 @@ export function CortarFios({ aoConcluir }: { aoConcluir: () => void }) {
                 disabled={solta}
                 aria-pressed={solta}
                 className={cn(
-                  "relative w-full text-left rounded-2xl border px-4 py-4",
-                  "flex items-center gap-3 transition-all duration-500",
+                  "relative w-full text-left rounded-xl border px-3 py-2.5 min-h-touch",
+                  "flex items-center gap-2.5 transition-all duration-500",
                   solta
                     ? "border-mauve/30 bg-blush/20 opacity-30 blur-[1px]"
                     : "border-laranja-claro bg-laranja-claro active:scale-[0.98]",
                 )}
               >
-                <span aria-hidden="true" className="text-xl shrink-0">
+                <span aria-hidden="true" className="text-base shrink-0 leading-none">
                   {solta ? "🕊️" : "🪨"}
                 </span>
                 <span
                   className={cn(
-                    "text-[15px] leading-snug font-medium",
+                    "text-[13.5px] leading-tight font-medium",
                     solta ? "text-noite/40 line-through" : "text-noite",
                   )}
                 >

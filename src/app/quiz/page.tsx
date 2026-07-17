@@ -27,15 +27,11 @@ export default function PaginaQuiz() {
         <div className="min-h-touch min-w-touch" aria-hidden="true" />
       </header>
 
-      {/* Pergunta */}
-      <section className="text-center mt-2 mb-5">
-        <p className="text-[11px] uppercase tracking-[0.24em] text-lavanda mb-2">
-          {QUIZ.cabecalho}
-        </p>
-        <h1 className="text-2xl font-medium text-noite leading-snug">
+      {/* Pergunta — versão minimalista pedida pela Rejane: só o título no alto */}
+      <section className="text-center mt-1 mb-6 px-1">
+        <h1 className="text-xl sm:text-2xl font-medium text-noite leading-snug">
           {QUIZ.pergunta}
         </h1>
-        <p className="text-sm text-bruma-muted mt-2">{QUIZ.instrucao}</p>
       </section>
 
       {/* Lista de botões coloridos — cada um leva a um módulo */}

@@ -7,25 +7,44 @@
 import type { ModuloSlug } from "@/tipos/modulo";
 
 export const BOAS_VINDAS = {
-  saudacao: "Olá, estou muito feliz em ter você aqui.",
-  respireBloco: "Respire fundo...",
-  pergunta: "agora me conte: como você está se sentindo hoje?",
-  cta: "Vamos lá",
+  titulo: "Seja bem-vinda!",
+  apresentacao: "Eu sou Rejane Ricco,",
+  especialidade: "especialista em Hipnose Clínica.",
+  destaqueLinha1: "Quero que você saiba que",
+  destaqueLinha2: "você não está sozinha.",
+  corpo1:
+    "Estou aqui para te ajudar a atravessar esse momento e transformar sua história.",
+  corpo2:
+    "Este espaço foi criado para você se cuidar, se entender e se fortalecer, com amor, acolhimento e as ferramentas certas.",
+  cta: "Vem comigo",
+  ctaSecundario: "Meus desabafos",
 } as const;
 
+/** Três pilares da tela de Boas-Vindas — resumo do que a usuária vai encontrar. */
+export const PILARES_BOAS_VINDAS = [
+  {
+    titulo: "EXERCÍCIOS",
+    descricao: "de interação com o aplicativo",
+  },
+  {
+    titulo: "ÁUDIOS",
+    descricao: "hipnóticos para te apoiar",
+  },
+  {
+    titulo: "MEUS DESABAFOS",
+    descricao: "seu diário para escrever e liberar",
+  },
+] as const;
+
 export const QUIZ = {
-  cabecalho: "Quero te ouvir",
-  pergunta: "Vamos lá, me conte como você está se sentindo hoje?",
-  instrucao:
-    "Toque no botão que mais se identifica com você neste momento.",
+  pergunta:
+    "Respire fundo... agora me conte: Como você está se sentindo hoje?",
 } as const;
 
 export const ENCERRAMENTO = {
-  titulo: "Por hoje, a sua jornada aqui terminou.",
-  corpo:
-    "Você olhou para dentro, cuidou das suas dores e escolheu acolher a sua história. Sinta orgulho de ter dedicado esse tempo para você.",
-  lembrete:
-    "Lembre-se: o seu GPS Emocional estará sempre aqui quando você precisar recalcular a rota ou apenas respirar em um lugar seguro. Volte para o seu dia levando a luz das suas estrelas guias.",
+  mensagemRejane:
+    "Seu dia foi longo, mas você chegou até aqui. Lembre-se de que recalibrar a rota faz parte do caminho e você não precisa dar conta de tudo sozinha. Respire fundo, descanse a sua mente e sinta o orgulho de estar cuidando de você hoje. Eu estou com você. Até amanhã.",
+  assinatura: "— Rejane Ricco",
   cta: "Concluir Dia",
   ancoraFinal: "Sua mente é o seu lar. Cuide bem dela.",
 } as const;
