@@ -97,9 +97,12 @@ async function solicitarPermissaoMic(): Promise<
   }
 }
 
+export type EstadoPermissao = "granted" | "prompt" | "denied" | "desconhecido";
+
 export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
   const [status, setStatus] = useState<StatusTranscricao>("inativo");
   const [erro, setErro] = useState<ErroTranscricao | null>(null);
+  const [estadoPermissao, setEstadoPermissao] = useState<EstadoPermissao>("desconhecido");
   const [trechoParcial, setTrechoParcial] = useState("");
   const refReconhecedor = useRef<IReconhecedor | null>(null);
   const refCallback = useRef(aoTrechoFinal);
@@ -107,6 +110,24 @@ export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
   useEffect(() => {
     refCallback.current = aoTrechoFinal;
   }, [aoTrechoFinal]);
+
+  // Consulta e monitora o estado da permissão do microfone (Permissions API).
+  // Se `denied` já ao entrar na pagina, o Chrome/Android nem vai perguntar —
+  // a UI usa esse estado para explicar o caminho correto de troubleshooting.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.permissions) return;
+    let cancelar: (() => void) | undefined;
+    navigator.permissions
+      .query({ name: "microphone" as PermissionName })
+      .then((p) => {
+        const atualizar = () => setEstadoPermissao(p.state as EstadoPermissao);
+        atualizar();
+        p.addEventListener("change", atualizar);
+        cancelar = () => p.removeEventListener("change", atualizar);
+      })
+      .catch(() => setEstadoPermissao("desconhecido"));
+    return () => cancelar?.();
+  }, []);
 
   const suportado =
     typeof window !== "undefined" &&
@@ -204,6 +225,7 @@ export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
     status,
     erro,
     mensagemErro: erro ? MENSAGENS_ERRO[erro] : null,
+    estadoPermissao,
     trechoParcial,
     iniciar,
     parar,

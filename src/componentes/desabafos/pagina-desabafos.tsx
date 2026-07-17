@@ -182,9 +182,10 @@ export function PaginaDesabafos() {
         {/* Erro de permissão bloqueada — card com passo-a-passo visual + retry */}
         {voz.erro === "permissao-bloqueada" && (
           <CardPermissaoBloqueada
+            estadoPermissao={voz.estadoPermissao}
             aoTentarNovamente={() => {
               voz.dispensarErro();
-              voz.iniciar();
+              void voz.iniciar();
             }}
             aoDispensar={voz.dispensarErro}
           />
@@ -365,25 +366,32 @@ function PainelGravacao({ trechoParcial }: { trechoParcial: string }) {
 }
 
 /**
- * Card exibido quando o navegador bloqueou o microfone permanentemente.
- * Chrome/Safari NÃO permitem re-solicitar via JS — precisa da usuária ir nas
- * configurações do site. Este card mostra o passo-a-passo com clareza e oferece
- * botão de retry (que refunciona quando ela liberou manualmente).
+ * Card exibido quando o microfone está bloqueado. O bloqueio pode vir de duas
+ * camadas: (A) permissão do navegador no sistema (Chrome/Safari sem mic no SO)
+ * ou (B) permissão do site no navegador (usuária clicou "bloquear" antes).
+ *
+ * Quando `estadoPermissao === "denied"` já ao entrar (nem o prompt aparece),
+ * o problema quase sempre é (A) — o SO bloqueou antes do browser perguntar.
  */
 function CardPermissaoBloqueada({
+  estadoPermissao,
   aoTentarNovamente,
   aoDispensar,
 }: {
+  estadoPermissao: "granted" | "prompt" | "denied" | "desconhecido";
   aoTentarNovamente: () => void;
   aoDispensar: () => void;
 }) {
+  const [abaAberta, setAbaAberta] = useState<"sistema" | "site">(
+    estadoPermissao === "denied" ? "sistema" : "site",
+  );
+
   return (
     <div
       role="alert"
       className="mt-3 rounded-2xl border border-atencao/40 bg-atencao/10 px-4 py-4 animate-aparecer"
     >
       <div className="flex items-start gap-3">
-        {/* Ícone cadeado */}
         <span
           aria-hidden="true"
           className="shrink-0 w-9 h-9 rounded-full bg-atencao/25 text-atencao-700 flex items-center justify-center"
@@ -399,7 +407,9 @@ function CardPermissaoBloqueada({
             O microfone está bloqueado
           </p>
           <p className="text-[13px] text-noite/70 mt-1 leading-snug">
-            Para falar aqui, libere o microfone só uma vez neste site:
+            Se você <strong>não viu um pedido de permissão aparecer</strong>, é
+            porque o navegador está bloqueado no seu celular. Verifique nesta
+            ordem:
           </p>
         </div>
 
@@ -415,27 +425,96 @@ function CardPermissaoBloqueada({
         </button>
       </div>
 
-      {/* Passos numerados */}
-      <ol className="mt-3 space-y-2">
-        {[
-          <>
-            Toque no <span aria-hidden="true">🔒</span> ao lado do endereço, no
-            topo da tela
-          </>,
-          <>Toque em &ldquo;Permissões&rdquo;</>,
-          <>Ative o Microfone e volte para cá</>,
-        ].map((passo, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-[13px] text-noite leading-snug">
-            <span
-              aria-hidden="true"
-              className="shrink-0 w-5 h-5 rounded-full bg-atencao/30 text-atencao-700 text-[11px] font-bold flex items-center justify-center mt-0.5"
-            >
-              {i + 1}
-            </span>
-            <span className="flex-1">{passo}</span>
-          </li>
-        ))}
-      </ol>
+      {/* Tabs — Sistema (Android) vs Site (Chrome) */}
+      <div className="mt-3 flex gap-1 bg-atencao/10 rounded-xl p-1">
+        <button
+          type="button"
+          onClick={() => setAbaAberta("sistema")}
+          className={cn(
+            "flex-1 min-h-touch text-[12px] font-semibold rounded-lg transition-colors px-2",
+            abaAberta === "sistema"
+              ? "bg-bruma text-noite shadow-sm"
+              : "text-noite/60",
+          )}
+        >
+          1. No Android
+        </button>
+        <button
+          type="button"
+          onClick={() => setAbaAberta("site")}
+          className={cn(
+            "flex-1 min-h-touch text-[12px] font-semibold rounded-lg transition-colors px-2",
+            abaAberta === "site"
+              ? "bg-bruma text-noite shadow-sm"
+              : "text-noite/60",
+          )}
+        >
+          2. Neste site
+        </button>
+      </div>
+
+      {abaAberta === "sistema" && (
+        <div className="mt-3 animate-aparecer">
+          <p className="text-[12px] text-noite/70 mb-2 leading-snug">
+            Se nem apareceu o pedido de permissão, o Chrome (ou Safari) não tem
+            permissão de microfone no seu celular:
+          </p>
+          <ol className="space-y-2">
+            {[
+              <>Abra os <strong>Ajustes</strong> do seu celular</>,
+              <>Vá em <strong>Apps</strong> (ou &ldquo;Aplicativos&rdquo;)</>,
+              <>Encontre <strong>Chrome</strong> (ou o navegador que você usa)</>,
+              <>Toque em <strong>Permissões</strong> → <strong>Microfone</strong></>,
+              <>Escolha <strong>Permitir</strong></>,
+            ].map((passo, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-2.5 text-[13px] text-noite leading-snug"
+              >
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 w-5 h-5 rounded-full bg-atencao/30 text-atencao-700 text-[11px] font-bold flex items-center justify-center mt-0.5"
+                >
+                  {i + 1}
+                </span>
+                <span className="flex-1">{passo}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
+
+      {abaAberta === "site" && (
+        <div className="mt-3 animate-aparecer">
+          <p className="text-[12px] text-noite/70 mb-2 leading-snug">
+            Se o pedido apareceu antes e você negou, precisa reabilitar aqui:
+          </p>
+          <ol className="space-y-2">
+            {[
+              <>
+                Toque no <span aria-hidden="true">🔒</span> (ou <span aria-hidden="true">⓵</span>) ao lado
+                do endereço, no topo
+              </>,
+              <>Toque em <strong>Permissões</strong> (ou &ldquo;Site settings&rdquo;)</>,
+              <>Ache <strong>Microfone</strong> e escolha <strong>Permitir</strong></>,
+              <>Recarregue a página e volte aqui</>,
+            ].map((passo, i) => (
+              <li
+                key={i}
+                className="flex items-start gap-2.5 text-[13px] text-noite leading-snug"
+              >
+                <span
+                  aria-hidden="true"
+                  className="shrink-0 w-5 h-5 rounded-full bg-atencao/30 text-atencao-700 text-[11px] font-bold flex items-center justify-center mt-0.5"
+                >
+                  {i + 1}
+                </span>
+                <span className="flex-1">{passo}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       <button
         type="button"
@@ -448,6 +527,11 @@ function CardPermissaoBloqueada({
       >
         Já liberei, tentar de novo
       </button>
+
+      {/* Diagnóstico técnico (discreto) */}
+      <p className="mt-3 text-[10.5px] text-noite/45 text-center font-mono">
+        Diagnóstico: permissão = {estadoPermissao}
+      </p>
     </div>
   );
 }
