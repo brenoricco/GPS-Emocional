@@ -1,10 +1,12 @@
 {
+  "id": "/",
   "name": "GPS Emocional",
   "short_name": "GPS Emocional",
   "description": "Um espaço seguro para respirar, se acolher e recalcular a rota. Técnicas de hipnoterapia guiadas por psicólogas.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
   "orientation": "portrait",
   "background_color": "#FBF2EE",
   "theme_color": "#FBF2EE",
@@ -23,6 +25,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "/icone-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }

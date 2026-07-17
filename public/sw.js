@@ -10,7 +10,7 @@
  * forçado (Ctrl+Shift+R) se mudar estratégias.
  */
 
-const VERSAO = "v7-audios-e-desabafos";
+const VERSAO = "v8-manifest-webapk";
 const NOME_CACHE = `gps-emocional-${VERSAO}`;
 const URLS_PRE_CACHE = [
   "/",
