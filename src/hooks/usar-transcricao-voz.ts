@@ -7,10 +7,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *
  * Nota de privacidade: em Chrome/Edge/Android a Google recebe o áudio para
  * processar (não é on-device). iOS Safari 16+ é on-device. Firefox não suporta.
- * A UI deve avisar a usuária que a voz passa pelo navegador antes de virar texto.
  *
- * A callback `aoTrechoFinal` é chamada exatamente uma vez por trecho reconhecido
- * (imperativa, sem passar por state), evitando loops de useEffect no consumidor.
+ * Fluxo de permissão: antes de iniciar o reconhecedor, este hook chama
+ * `getUserMedia({audio:true})` para (a) forçar o prompt nativo do sistema
+ * quando a permissão está no estado "prompt" e (b) detectar imediatamente
+ * quando está "denied" — o SpeechRecognition puro tende a falhar silenciosa
+ * ou tardiamente em Android nesse caso. O stream é liberado logo em seguida
+ * (o próprio SpeechRecognition abre a captura interna quando `start()` roda).
+ *
+ * A callback `aoTrechoFinal` é chamada imperativamente a cada trecho final,
+ * evitando loops de useEffect no consumidor.
  */
 
 type ResultadoReconhecido = {
@@ -46,11 +52,12 @@ declare global {
   }
 }
 
-export type StatusTranscricao = "inativo" | "gravando" | "erro";
+export type StatusTranscricao = "inativo" | "solicitando" | "gravando" | "erro";
 
 export type ErroTranscricao =
   | "sem-suporte"
-  | "sem-permissao"
+  | "permissao-bloqueada"
+  | "sem-microfone"
   | "sem-audio"
   | "rede"
   | "generico";
@@ -58,8 +65,10 @@ export type ErroTranscricao =
 const MENSAGENS_ERRO: Record<ErroTranscricao, string> = {
   "sem-suporte":
     "Seu navegador ainda não escuta pt-BR. Escreva por aqui — funciona igual.",
-  "sem-permissao":
-    "Você bloqueou o microfone. Libere nas configurações do navegador para falar.",
+  "permissao-bloqueada":
+    "O microfone está bloqueado para este site.",
+  "sem-microfone":
+    "Não encontrei um microfone neste aparelho.",
   "sem-audio":
     "Não te escutei. Aproxime o celular da boca e tente de novo.",
   rede: "Sem internet no momento. Tente escrever ou volte quando conectar.",
@@ -71,6 +80,23 @@ type Opcoes = {
   aoTrechoFinal?: (trecho: string) => void;
 };
 
+async function solicitarPermissaoMic(): Promise<
+  "ok" | "negado" | "sem-mic" | "erro"
+> {
+  if (!navigator.mediaDevices?.getUserMedia) return "erro";
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Libera imediatamente — o SpeechRecognition abre seu próprio stream em start()
+    stream.getTracks().forEach((t) => t.stop());
+    return "ok";
+  } catch (e) {
+    const nome = (e as { name?: string } | null)?.name;
+    if (nome === "NotAllowedError" || nome === "SecurityError") return "negado";
+    if (nome === "NotFoundError" || nome === "OverconstrainedError") return "sem-mic";
+    return "erro";
+  }
+}
+
 export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
   const [status, setStatus] = useState<StatusTranscricao>("inativo");
   const [erro, setErro] = useState<ErroTranscricao | null>(null);
@@ -78,7 +104,6 @@ export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
   const refReconhecedor = useRef<IReconhecedor | null>(null);
   const refCallback = useRef(aoTrechoFinal);
 
-  // Mantém callback sempre atualizada sem forçar reinit do reconhecedor
   useEffect(() => {
     refCallback.current = aoTrechoFinal;
   }, [aoTrechoFinal]);
@@ -91,7 +116,7 @@ export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
     refReconhecedor.current?.stop();
   }, []);
 
-  const iniciar = useCallback(() => {
+  const iniciar = useCallback(async () => {
     if (!suportado) {
       setErro("sem-suporte");
       setStatus("erro");
@@ -99,6 +124,22 @@ export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
     }
     const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Ctor) return;
+
+    setErro(null);
+    setStatus("solicitando");
+
+    // Força o prompt do sistema (se permissão for "prompt") ou detecta bloqueio
+    const resultado = await solicitarPermissaoMic();
+    if (resultado === "negado") {
+      setErro("permissao-bloqueada");
+      setStatus("erro");
+      return;
+    }
+    if (resultado === "sem-mic") {
+      setErro("sem-microfone");
+      setStatus("erro");
+      return;
+    }
 
     const rec = new Ctor();
     rec.lang = "pt-BR";
@@ -124,7 +165,7 @@ export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
     rec.onerror = (evento) => {
       const codigo = evento.error;
       let mapeado: ErroTranscricao = "generico";
-      if (codigo === "not-allowed" || codigo === "service-not-allowed") mapeado = "sem-permissao";
+      if (codigo === "not-allowed" || codigo === "service-not-allowed") mapeado = "permissao-bloqueada";
       else if (codigo === "no-speech" || codigo === "audio-capture") mapeado = "sem-audio";
       else if (codigo === "network") mapeado = "rede";
       setErro(mapeado);
@@ -137,7 +178,6 @@ export function useTranscricaoVoz({ aoTrechoFinal }: Opcoes = {}) {
     };
 
     refReconhecedor.current = rec;
-    setErro(null);
     setTrechoParcial("");
     try {
       rec.start();

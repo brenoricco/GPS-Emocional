@@ -76,7 +76,7 @@ export function PaginaDesabafos() {
   function alternarFala() {
     vibrar("toque");
     if (gravando) voz.parar();
-    else voz.iniciar();
+    else void voz.iniciar();
   }
 
   return (
@@ -179,8 +179,19 @@ export function PaginaDesabafos() {
         {/* Painel de gravação — timer + waveform + preview parcial (padrão Voice Memos) */}
         {gravando && <PainelGravacao trechoParcial={voz.trechoParcial} />}
 
-        {/* Erro — banner acolhedor, dismissível */}
-        {voz.erro && voz.mensagemErro && (
+        {/* Erro de permissão bloqueada — card com passo-a-passo visual + retry */}
+        {voz.erro === "permissao-bloqueada" && (
+          <CardPermissaoBloqueada
+            aoTentarNovamente={() => {
+              voz.dispensarErro();
+              voz.iniciar();
+            }}
+            aoDispensar={voz.dispensarErro}
+          />
+        )}
+
+        {/* Demais erros — banner acolhedor, dismissível */}
+        {voz.erro && voz.erro !== "permissao-bloqueada" && voz.mensagemErro && (
           <div
             role="alert"
             className="mt-3 rounded-2xl border border-atencao/40 bg-atencao/10 px-4 py-3 flex items-start gap-2 animate-aparecer"
@@ -349,6 +360,94 @@ function PainelGravacao({ trechoParcial }: { trechoParcial: string }) {
       <p className="mt-1 text-[11px] text-noite/50">
         Toque em <span className="inline-block w-2.5 h-2.5 rounded-sm bg-noite/60 align-middle mx-0.5" aria-hidden="true" /> para parar.
       </p>
+    </div>
+  );
+}
+
+/**
+ * Card exibido quando o navegador bloqueou o microfone permanentemente.
+ * Chrome/Safari NÃO permitem re-solicitar via JS — precisa da usuária ir nas
+ * configurações do site. Este card mostra o passo-a-passo com clareza e oferece
+ * botão de retry (que refunciona quando ela liberou manualmente).
+ */
+function CardPermissaoBloqueada({
+  aoTentarNovamente,
+  aoDispensar,
+}: {
+  aoTentarNovamente: () => void;
+  aoDispensar: () => void;
+}) {
+  return (
+    <div
+      role="alert"
+      className="mt-3 rounded-2xl border border-atencao/40 bg-atencao/10 px-4 py-4 animate-aparecer"
+    >
+      <div className="flex items-start gap-3">
+        {/* Ícone cadeado */}
+        <span
+          aria-hidden="true"
+          className="shrink-0 w-9 h-9 rounded-full bg-atencao/25 text-atencao-700 flex items-center justify-center"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <rect x="4" y="10" width="16" height="10" rx="2" />
+            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+          </svg>
+        </span>
+
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-noite">
+            O microfone está bloqueado
+          </p>
+          <p className="text-[13px] text-noite/70 mt-1 leading-snug">
+            Para falar aqui, libere o microfone só uma vez neste site:
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={aoDispensar}
+          className="text-noite/50 min-h-touch min-w-touch inline-flex items-center justify-center -mr-1 -mt-1"
+          aria-label="Fechar aviso"
+        >
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Passos numerados */}
+      <ol className="mt-3 space-y-2">
+        {[
+          <>
+            Toque no <span aria-hidden="true">🔒</span> ao lado do endereço, no
+            topo da tela
+          </>,
+          <>Toque em &ldquo;Permissões&rdquo;</>,
+          <>Ative o Microfone e volte para cá</>,
+        ].map((passo, i) => (
+          <li key={i} className="flex items-start gap-2.5 text-[13px] text-noite leading-snug">
+            <span
+              aria-hidden="true"
+              className="shrink-0 w-5 h-5 rounded-full bg-atencao/30 text-atencao-700 text-[11px] font-bold flex items-center justify-center mt-0.5"
+            >
+              {i + 1}
+            </span>
+            <span className="flex-1">{passo}</span>
+          </li>
+        ))}
+      </ol>
+
+      <button
+        type="button"
+        onClick={aoTentarNovamente}
+        className={cn(
+          "mt-4 w-full min-h-[48px] rounded-cta font-semibold",
+          "bg-rosa-flor text-noite active:scale-[0.98] transition-transform",
+          "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-rosa-flor-400/40",
+        )}
+      >
+        Já liberei, tentar de novo
+      </button>
     </div>
   );
 }
