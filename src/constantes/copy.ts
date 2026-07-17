@@ -8,7 +8,7 @@ import type { ModuloSlug } from "@/tipos/modulo";
 
 export const BOAS_VINDAS = {
   titulo: "Seja bem-vinda!",
-  apresentacao: "Eu sou Rejane Ricco,",
+  apresentacao: "Eu sou ",
   especialidade: "especialista em Hipnose Clínica.",
   destaqueLinha1: "Quero que você saiba que",
   destaqueLinha2: "você não está sozinha.",
