@@ -188,6 +188,7 @@ const config: Config = {
         "petala-flutuando": "petala-flutuando 12s ease-in-out infinite",
         "aparecer": "aparecer 400ms ease-out both",
         "pulsar-cta": "pulsar-cta 2.4s ease-in-out infinite",
+        onda: "onda 900ms ease-in-out infinite",
       },
 
       keyframes: {
@@ -210,6 +211,10 @@ const config: Config = {
         "pulsar-cta": {
           "0%, 100%": { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(227,156,176,0.35)" },
           "50%": { transform: "scale(1.02)", boxShadow: "0 0 0 12px rgba(227,156,176,0)" },
+        },
+        onda: {
+          "0%, 100%": { transform: "scaleY(0.4)" },
+          "50%": { transform: "scaleY(1)" },
         },
       },
     },
